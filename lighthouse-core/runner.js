@@ -21,6 +21,7 @@ const GatherRunner = require('./gather/gather-runner');
 const ReportGeneratorV2 = require('./report/v2/report-generator');
 const Audit = require('./audits/audit');
 const emulation = require('./lib/emulation');
+const assetSaver = require('./lib/asset-saver');
 const log = require('./lib/log');
 const fs = require('fs');
 const path = require('path');
@@ -57,13 +58,19 @@ class Runner {
     opts.url = parsedURL.href;
 
     // Check that there are passes & audits...
-    const validPassesAndAudits = config.passes && config.audits;
+    let validPassesAndAudits = config.passes && config.audits;
 
     // ... or that there are artifacts & audits.
-    const validArtifactsAndAudits = config.artifacts && config.audits;
+    let validArtifactsAndAudits = config.artifacts && config.audits;
 
     // Make a run, which can be .then()'d with whatever needs to run (based on the config).
     let run = Promise.resolve();
+
+    if (opts.flags.processLatestRun) {
+      validArtifactsAndAudits = true;
+      validPassesAndAudits = false;
+      config.artifacts = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'latest.artifacts.log'), 'utf8'));
+    }
 
     // If there are passes run the GatherRunner and gather the artifacts. If not, we will need
     // to check that there are artifacts specified in the config, and throw if not.
@@ -72,6 +79,12 @@ class Runner {
         opts.driver = opts.driverMock || new Driver(connection);
         // Finally set up the driver to gather.
         run = run.then(_ => GatherRunner.run(config.passes, opts));
+        if (opts.flags.dumpArtifacts) {
+          run = run.then(artifacts => assetSaver.saveArtifacts(artifacts, path.join(process.cwd(), 'latest')))
+            .then(_ => {
+              return Promise.reject(new Error('Artifacts dumped and run ceased.'));
+            });
+        }
       } else if (validArtifactsAndAudits) {
         run = run.then(_ => {
           return Object.assign(GatherRunner.instantiateComputedArtifacts(), config.artifacts);
