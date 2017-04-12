@@ -23,6 +23,8 @@ const jsdom = require('jsdom');
 const URL = require('../../../../lib/url-shim');
 const DOM = require('../../../../report/v2/renderer/dom.js');
 const DetailsRenderer = require('../../../../report/v2/renderer/details-renderer.js');
+const Logger = require('../../../../report/v2/renderer/logger.js');
+const ReportFeatures = require('../../../../report/v2/renderer/report-features.js');
 const ReportRenderer = require('../../../../report/v2/renderer/report-renderer.js');
 const sampleResults = require('../../../results/sample_v2.json');
 
@@ -33,6 +35,13 @@ describe('ReportRenderer V2', () => {
 
   before(() => {
     global.URL = URL;
+    global.Logger = Logger;
+    global.ReportFeatures = ReportFeatures;
+    global.matchMedia = function() {
+      return {
+        addListener: function() {}
+      };
+    };
     const document = jsdom.jsdom(TEMPLATE_FILE);
     const dom = new DOM(document);
     const detailsRenderer = new DetailsRenderer(dom);
@@ -41,20 +50,26 @@ describe('ReportRenderer V2', () => {
 
   after(() => {
     global.URL = undefined;
+    global.Logger = undefined;
+    global.ReportFeatures = undefined;
+    global.matchMedia = undefined;
   });
 
   describe('renderReport', () => {
     it('should render a report', () => {
-      const output = renderer.renderReport(sampleResults);
+      const container = renderer._dom._document.body;
+      const output = renderer.renderReport(sampleResults, container);
       assert.ok(output.classList.contains('lh-report'));
+      assert.ok(container.contains(output), 'report appended to container');
     });
 
     it('should render an exception for invalid input', () => {
+      const container = renderer._dom._document.body;
       const output = renderer.renderReport({
         get reportCategories() {
           throw new Error();
         }
-      });
+      }, container);
       assert.ok(output.classList.contains('lh-exception'));
     });
 
