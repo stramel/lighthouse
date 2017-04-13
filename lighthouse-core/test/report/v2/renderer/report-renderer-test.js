@@ -15,7 +15,7 @@
  */
 'use strict';
 
-/* eslint-env mocha, browser */
+/* eslint-env mocha */
 
 const assert = require('assert');
 const fs = require('fs');
@@ -47,7 +47,7 @@ describe('ReportRenderer V2', () => {
     const document = jsdom.jsdom(TEMPLATE_FILE);
     const dom = new DOM(document);
     const detailsRenderer = new DetailsRenderer(dom);
-    renderer = new ReportRenderer(dom, detailsRenderer);
+    renderer = new ReportRenderer.ReportRenderer(dom, detailsRenderer);
   });
 
   after(() => {
@@ -55,6 +55,29 @@ describe('ReportRenderer V2', () => {
     global.Logger = undefined;
     global.ReportFeatures = undefined;
     global.matchMedia = undefined;
+  });
+
+  describe('format helpers', () => {
+    it('formats a date', () => {
+      const timestamp = ReportRenderer.formatDateTime(sampleResults.generatedTime);
+      assert.equal(timestamp, 'Apr 5, 2017, 3:41 PM PDT');
+    });
+
+    it('formats a number', () => {
+      assert.strictEqual(ReportRenderer.formatNumber(10), '10');
+      assert.strictEqual(ReportRenderer.formatNumber(100.01), '100');
+      assert.strictEqual(ReportRenderer.formatNumber(13000.456), '13,000.5');
+    });
+
+    it('calculates a score ratings', () => {
+      assert.equal(ReportRenderer.calculateRating(0), 'fail');
+      assert.equal(ReportRenderer.calculateRating(10), 'fail');
+      assert.equal(ReportRenderer.calculateRating(45), 'average');
+      assert.equal(ReportRenderer.calculateRating(55), 'average');
+      assert.equal(ReportRenderer.calculateRating(75), 'pass');
+      assert.equal(ReportRenderer.calculateRating(80), 'pass');
+      assert.equal(ReportRenderer.calculateRating(100), 'pass');
+    });
   });
 
   describe('renderReport', () => {

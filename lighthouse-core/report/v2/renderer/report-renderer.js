@@ -288,7 +288,12 @@ class ReportRenderer {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ReportRenderer;
+  module.exports = {
+    formatDateTime,
+    formatNumber,
+    calculateRating,
+    ReportRenderer
+  };
 } else {
   self.ReportRenderer = ReportRenderer;
 }
