@@ -61,7 +61,7 @@ function formatNumber(number) {
  */
 function formatDateTime(date) {
   const options = {
-    month: 'numeric', day: 'numeric', year: 'numeric',
+    month: 'short', day: 'numeric', year: 'numeric',
     hour: 'numeric', minute: 'numeric', timeZoneName: 'short'
   };
   let formatter = new Intl.DateTimeFormat('en-US', options);
