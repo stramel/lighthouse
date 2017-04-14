@@ -38,18 +38,21 @@ class ComputedArtifact {
 
   /**
    * Request a computed artifact, caching the result on the input artifact.
-   * @param {!OBject} artifact
+   * @param {!Object} artifact
+   * @param {!Object=} artifacts
    * @return {!Promise}
    */
-  request(artifact) {
+  request(artifact, artifacts) {
     if (this.cache.has(artifact)) {
       return Promise.resolve(this.cache.get(artifact));
     }
 
-    return Promise.resolve().then(_ => this.compute_(artifact)).then(computedArtifact => {
-      this.cache.set(artifact, computedArtifact);
-      return computedArtifact;
-    });
+    return Promise.resolve()
+      .then(_ => this.compute_(artifact, artifacts))
+      .then(computedArtifact => {
+        this.cache.set(artifact, computedArtifact);
+        return computedArtifact;
+      });
   }
 }
 

@@ -24,7 +24,6 @@
  */
 
 const Audit = require('./audit');
-const TTIMetric = require('./time-to-interactive');
 const Emulation = require('../lib/emulation');
 
 const Formatter = require('../report/formatter');
@@ -63,20 +62,21 @@ class LoadFastEnough4Pwa extends Audit {
     const areLatenciesAll3G = allRequestLatencies.every(val =>
         val === undefined || val > latency3gMin);
 
-    return TTIMetric.audit(artifacts).then(ttiResult => {
-      const timeToInteractive = ttiResult.extendedInfo.value.timings.timeToInteractive;
-      const isFast = timeToInteractive < MAXIMUM_TTI;
+    const trace = artifacts.traces[Audit.DEFAULT_PASS];
+    return artifacts.requestFirstInteractive(trace, artifacts).then(firstInteractive => {
+      const ttfiValue = firstInteractive.timeInMs;
+      const isFast = ttfiValue < MAXIMUM_TTI;
 
       const extendedInfo = {
         formatter: Formatter.SUPPORTED_FORMATS.NULL,
-        value: {areLatenciesAll3G, allRequestLatencies, isFast, timeToInteractive}
+        value: {areLatenciesAll3G, allRequestLatencies, isFast, ttfiValue}
       };
 
       if (!areLatenciesAll3G) {
         return {
           rawValue: false,
           // eslint-disable-next-line max-len
-          debugString: `The Time To Interactive was found at ${ttiResult.displayValue}, however, the network request latencies were not sufficiently realistic, so the performance measurements cannot be trusted.`,
+          debugString: `First Interactive was found at ${ttfiValue.toLocaleString()}, however, the network request latencies were not sufficiently realistic, so the performance measurements cannot be trusted.`,
           extendedInfo
         };
       }
@@ -85,7 +85,7 @@ class LoadFastEnough4Pwa extends Audit {
         return {
           rawValue: false,
            // eslint-disable-next-line max-len
-          debugString: `Under 3G conditions, the Time To Interactive was at ${ttiResult.displayValue}. More details in the "Performance" section.`,
+          debugString: `Under 3G conditions, First Interactive was at ${ttfiValue.toLocaleString()}. More details in the "Performance" section.`,
           extendedInfo
         };
       }
