@@ -27,6 +27,8 @@ const fs = require('fs');
 const path = require('path');
 const URL = require('./lib/url-shim');
 
+const partialRunFilename = 'latest';
+
 class Runner {
   static run(connection, opts) {
     // Clean opts input.
@@ -57,87 +59,60 @@ class Runner {
     // canonicalize URL with any trailing slashes neccessary
     opts.url = parsedURL.href;
 
-    // Check that there are passes & audits...
-    let validPassesAndAudits = config.passes && config.audits;
-
-    // ... or that there are artifacts & audits.
-    let validArtifactsAndAudits = config.artifacts && config.audits;
-
     // Make a run, which can be .then()'d with whatever needs to run (based on the config).
     let run = Promise.resolve();
 
-    if (opts.flags.processLatestRun) {
-      validArtifactsAndAudits = true;
-      validPassesAndAudits = false;
+    if (opts.flags.onlyAudit) {
+      config.removePasses();
       config.artifacts = JSON.parse(
-        fs.readFileSync(path.join(process.cwd(), 'latest.artifacts.log'), 'utf8')
+        fs.readFileSync(path.join(process.cwd(), `${partialRunFilename}.artifacts.log`), 'utf8')
       );
     }
 
-    // If there are passes run the GatherRunner and gather the artifacts. If not, we will need
-    // to check that there are artifacts specified in the config, and throw if not.
-    if (validPassesAndAudits || validArtifactsAndAudits) {
-      if (validPassesAndAudits) {
-        opts.driver = opts.driverMock || new Driver(connection);
-        // Finally set up the driver to gather.
-        run = run.then(_ => GatherRunner.run(config.passes, opts));
-        if (opts.flags.dumpArtifacts) {
-          run = run
-            .then(artifacts =>
-              assetSaver.saveArtifacts(artifacts, path.join(process.cwd(), 'latest'))
-            )
-            .then(_ => {
-              return Promise.reject(new Error('Artifacts dumped and run ceased.'));
-            });
-        }
-      } else if (validArtifactsAndAudits) {
-        run = run.then(_ => {
-          return Object.assign(GatherRunner.instantiateComputedArtifacts(), config.artifacts);
-        });
-      }
+    // Entering: Gather phase
+    const willGatherArtifacts = config.passes;
+    const willProcessSavedArtifacts = config.artifacts;
 
-      // Basic check that the traces (gathered or loaded) are valid.
-      run = run.then(artifacts => {
-        for (const passName of Object.keys(artifacts.traces || {})) {
-          const trace = artifacts.traces[passName];
-          if (!Array.isArray(trace.traceEvents)) {
-            throw new Error(passName + ' trace was invalid. `traceEvents` was not an array.');
-          }
-        }
-
-        return artifacts;
-      });
-
-      // Run each audit sequentially, the auditResults array has all our fine work
-      const auditResults = [];
-      for (const audit of config.audits) {
-        run = run.then(artifacts => {
-          return Runner._runAudit(audit, artifacts)
-            .then(ret => auditResults.push(ret))
-            .then(_ => artifacts);
-        });
-      }
-      run = run.then(artifacts => {
-        return {artifacts, auditResults};
-      });
-    } else if (config.auditResults) {
-      // If there are existing audit results, surface those here.
-      // Instantiate and return artifacts for consistency.
-      const artifacts = Object.assign(GatherRunner.instantiateComputedArtifacts(),
-                                      config.artifacts || {});
-      run = run.then(_ => {
-        return {
-          artifacts,
-          auditResults: config.auditResults
-        };
-      });
-    } else {
+    if (!willGatherArtifacts && !willProcessSavedArtifacts) {
       const err = Error(
-          'The config must provide passes and audits, artifacts and audits, or auditResults');
+          'The config must provide passes and audits or artifacts and audits.');
       return Promise.reject(err);
     }
 
-    // Format and aggregate results before returning.
+    // If we're gathering, let's go collect artifacts from the browser
+    if (willGatherArtifacts) {
+      opts.driver = opts.driverMock || new Driver(connection);
+      // Kick off the gather run
+      run = run.then(_ => GatherRunner.run(config.passes, opts));
+      // Potentially quit now if we're only saving collected artifacts
+      if (opts.flags.onlyGather) {
+        run = run.then(artifacts =>
+          assetSaver.saveArtifacts(artifacts, path.join(process.cwd(), partialRunFilename))
+        );
+        return run;
+      }
+    // In this case, skip connecting to a browser, we'll just process the offline artifacts
+    } else if (willProcessSavedArtifacts) {
+      run = run.then(_ => {
+        return Object.assign(GatherRunner.instantiateComputedArtifacts(), config.artifacts);
+      });
+    }
+
+    // Entering: Audit phase
+    // Run each audit sequentially, the auditResults array has all our fine work
+    const auditResults = [];
+    for (const audit of config.audits) {
+      run = run.then(artifacts => {
+        return Runner._runAudit(audit, artifacts)
+          .then(ret => auditResults.push(ret))
+          .then(_ => artifacts);
+      });
+    }
+    run = run.then(artifacts => {
+      return {artifacts, auditResults};
+    });
+
+    // Entering: Conclusion of the lighthouse result object
     run = run
       .then(runResults => {
         const resultsById = runResults.auditResults.reduce((results, audit) => {

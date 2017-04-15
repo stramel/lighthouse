@@ -153,31 +153,6 @@ describe('Config', () => {
     assert.equal(configJSON.passes[0].gatherers.length, 2);
   });
 
-  it('contains new copies of auditResults and aggregations', () => {
-    const configJSON = origConfig;
-    configJSON.auditResults = [{
-      value: 1,
-      rawValue: 1.0,
-      optimalValue: 1.0,
-      name: 'Test Audit',
-      extendedInfo: {
-        formatter: 'Supported formatter',
-        value: {
-          a: 1
-        }
-      }
-    }];
-
-    const config = new Config(configJSON);
-    assert.notEqual(config, configJSON, 'Objects are strictly different');
-    assert.ok(config.aggregations, 'Aggregations array exists');
-    assert.ok(config.auditResults, 'Audits array exists');
-    assert.deepStrictEqual(config.aggregations, configJSON.aggregations, 'Aggregations match');
-    assert.notEqual(config.aggregations, configJSON.aggregations, 'Aggregations not same object');
-    assert.notEqual(config.auditResults, configJSON.auditResults, 'Audits not same object');
-    assert.deepStrictEqual(config.auditResults, configJSON.auditResults, 'Audits match');
-  });
-
   it('expands audits', () => {
     const config = new Config({
       audits: ['user-timings']

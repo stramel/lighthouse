@@ -46,6 +46,7 @@ interface LighthouseError extends Error {
 };
 
 const cliFlags = yargs
+  .wrap(yargs.terminalWidth())
   .help('help')
   .version(() => pkg.version)
   .showHelpOnFail(false, 'Specify --help for available options')
@@ -65,8 +66,9 @@ const cliFlags = yargs
   .group([
     'save-assets',
     'save-artifacts',
-    'dump-artifacts',
-    'process-latest-run',
+    'only-gather',
+    'only-audit',
+    'only-report',
     'list-all-audits',
     'list-trace-categories',
     'additional-trace-categories',
@@ -81,6 +83,9 @@ const cliFlags = yargs
     'disable-device-emulation': 'Disable Nexus 5X emulation',
     'disable-cpu-throttling': 'Disable CPU throttling',
     'disable-network-throttling': 'Disable network throttling',
+    'only-gather': 'Collect artifacts from a connected browser, save, & quit',
+    'only-audit': 'Process saved artifacts from disk',
+    'only-report': 'Generate report from saved audit results',
     'save-assets': 'Save the trace contents & screenshots to disk',
     'save-artifacts': 'Save all gathered artifacts to disk',
     'list-all-audits': 'Prints a list of all available audits and exits',
@@ -111,6 +116,13 @@ Example: --output-path=./lighthouse-results.html`,
     'view': 'Open HTML report in your browser'
   })
 
+  // set aliases
+  .alias({
+    'only-gather': 'G',
+    'only-audit': 'A',
+    'only-report': 'R'
+  })
+
   // boolean values
   .boolean([
     'disable-storage-reset',
@@ -119,8 +131,9 @@ Example: --output-path=./lighthouse-results.html`,
     'disable-network-throttling',
     'save-assets',
     'save-artifacts',
-    'process-latest-run',
-    'dump-artifacts',
+    'only-audit',
+    'only-report',
+    'only-gather',
     'list-all-audits',
     'list-trace-categories',
     'perf',
@@ -333,6 +346,13 @@ export async function runLighthouse(url: string,
     const chromeLauncher = await getDebuggableChrome(flags)
     const results = await lighthouse(url, flags, config);
 
+    if (cliFlags.onlyGather) return;
+
+    if (cliFlags.onlyAudit) {
+      cliFlags.output = 'json';
+      cliFlags.outputPath = 'latest.report.json';
+    }
+
     const artifacts = results.artifacts;
     delete results.artifacts;
 
@@ -352,5 +372,9 @@ export async function runLighthouse(url: string,
  }
 
 export function run() {
+  if (cliFlags.onlyReport) {
+    const lighthouseResult = require(path.join(process.cwd(), './latest.report.json'));
+    return saveResults(lighthouseResult, {}, cliFlags)
+  }
   return runLighthouse(url, cliFlags, config);
 }
