@@ -49,10 +49,16 @@ class Logger {
     }
   }
 
+  /**
+   * @param {string} msg
+   */
   warn(msg) {
     this.log('Warning: ' + msg);
   }
 
+  /**
+   * @param {string} msg
+   */
   error(msg) {
     this.log(msg);
   }

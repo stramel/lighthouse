@@ -17,7 +17,7 @@
 
 /* globals document window URL Blob Logger */
 
-class ReportFeatures {
+class ReportUIFeatures {
 
   /**
    * @param {!Document} document
@@ -41,7 +41,7 @@ class ReportFeatures {
   }
 
   _addEventListeners() {
-    this._setUpCollaspeDetailsAfterPrinting();
+    this._setUpCollapseDetailsAfterPrinting();
 
     this.exportButton = this._document.querySelector('.lh-export__button');
     if (this.exportButton) {
@@ -56,15 +56,16 @@ class ReportFeatures {
 
   /**
    * Adds export button and print functionality to the report.
-   * @param {ReportJSON=} report
+   * @param {!ReportJSON} report
    */
-  attach(report) {
+  addUIFeatures(report) {
     this.json = report;
     this._addEventListeners();
   }
 
   /**
    * Handler copy events.
+   * @param {!Event} e
    */
   onCopy(e) {
     // Only handle copy button presses (e.g. ignore the user copying page text).
@@ -110,6 +111,7 @@ class ReportFeatures {
 
   /**
    * Click handler for export button.
+   * @param {!Event} e
    */
   onExportButtonClick(e) {
     e.preventDefault();
@@ -119,6 +121,7 @@ class ReportFeatures {
 
   /**
    * Handler for "export as" button.
+   * @param {!Event} e
    */
   onExport(e) {
     e.preventDefault();
@@ -135,7 +138,7 @@ class ReportFeatures {
         this.sendJSONReport();
         break;
       case 'print':
-        this.expandDetailsWhenPrinting();
+        this.expandAllDetails();
         window.print();
         break;
       case 'save-json': {
@@ -144,20 +147,7 @@ class ReportFeatures {
         break;
       }
       case 'save-html': {
-        let htmlStr = '';
-
-        // Since Viewer generates its page HTML dynamically from report JSON,
-        // run the ReportGenerator. For everything else, the page's HTML is
-        // already the final product.
-        // if (e.target.dataset.context !== 'viewer') {
-        //   htmlStr = this._document.documentElement.outerHTML;
-        // } else {
-        //   const reportGenerator = new ReportGeneratorV2();
-        //   htmlStr = reportGenerator.generateReportHTML(this.json);
-        // }
-        // TODO: fix viewer.
-        htmlStr = this._document.documentElement.outerHTML;
-
+        const htmlStr = this._document.documentElement.outerHTML;
         try {
           this._saveFile(new Blob([htmlStr], {type: 'text/html'}));
         } catch (err) {
@@ -173,6 +163,7 @@ class ReportFeatures {
 
   /**
    * Keydown handler for the document.
+   * @param {!Event} e
    */
   onKeyDown(e) {
     if (e.keyCode === 27) { // ESC
@@ -207,49 +198,57 @@ class ReportFeatures {
   }
 
   /**
-   * Expands details while user using short cut to print report
+   * Expands audit details when user prints via keyboard shortcut.
+   * @param {!Event} e
    */
   printShortCutDetect(e) {
     if ((e.ctrlKey || e.metaKey) && e.keyCode === 80) { // Ctrl+P
-      this.expandDetailsWhenPrinting();
+      this.expandAllDetails();
     }
   }
 
   /**
-   * Expands audit `<details>` when the user prints the page.
+   * Expands all audit `<details>`.
    * Ideally, a print stylesheet could take care of this, but CSS has no way to
    * open a `<details>` element.
    */
-  expandDetailsWhenPrinting() {
-    const reportContainer = this._document.querySelector('.lh-categories');
-    const details = Array.from(reportContainer.querySelectorAll('details'));
+  expandAllDetails() {
+    const details = Array.from(this._document.querySelectorAll('.lh-categories details'));
     details.map(detail => detail.open = true);
+  }
+
+  /**
+   * Collapses all audit `<details>`.
+   * open a `<details>` element.
+   */
+  collapseAllDetails() {
+    const details = Array.from(this._document.querySelectorAll('.lh-categories details'));
+    details.map(detail => detail.open = false);
   }
 
   /**
    * Sets up listeners to collapse audit `<details>` when the user closes the
    * print dialog, all `<details>` are collapsed.
    */
-  _setUpCollaspeDetailsAfterPrinting() {
-    const details = Array.from(this._document.querySelectorAll('details'));
-
+  _setUpCollapseDetailsAfterPrinting() {
     // FF and IE implement these old events.
     if ('onbeforeprint' in window) {
-      window.addEventListener('afterprint', _ => {
-        details.map(detail => detail.open = false);
-      });
+      window.addEventListener('afterprint', this.collapseAllDetails);
     } else {
-      // Note: while FF has media listeners, it doesn't fire when matching 'print'.
+      // Note: FF implements both window.onbeforeprint and media listeners. However,
+      // it doesn't matchMedia doesn't fire when matching 'print'.
       window.matchMedia('print').addListener(mql => {
-        if (!mql.matches) {
-          details.map(detail => detail.open = mql.matches);
+        if (mql.matches) {
+          this.expandAllDetails();
+        } else {
+          this.collapseAllDetails();
         }
       });
     }
   }
   /**
    * Downloads a file (blob) using a[download].
-   * @param {Blob|File} blob The file to save.
+   * @param {!Blob|!File} blob The file to save.
    */
   _saveFile(blob) {
     const filename = window.getFilenamePrefix({
@@ -272,5 +271,5 @@ class ReportFeatures {
 }
 
 if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ReportFeatures;
+  module.exports = ReportUIFeatures;
 }

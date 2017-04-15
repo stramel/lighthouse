@@ -22,7 +22,7 @@
  * Dummy text for ensuring report robustness: </script> pre$`post %%LIGHTHOUSE_JSON%%
  */
 
-/* globals self ReportFeatures */
+/* globals self ReportUIFeatures */
 
 const RATINGS = {
   PASS: {label: 'pass', minScore: 75},
@@ -84,8 +84,8 @@ class ReportRenderer {
   constructor(dom, detailsRenderer) {
     this._dom = dom;
     this._detailsRenderer = detailsRenderer;
-    this._reportFeatures = new ReportFeatures(this._dom.document());
     this._templateContext = this._dom.document();
+    this._reportUIFeatures = new ReportUIFeatures(this._dom.document());
   }
 
   /**
@@ -94,7 +94,7 @@ class ReportRenderer {
    * @return {!Element}
    */
   renderReport(report, container) {
-    container.innerHTML = ''; // Remove previous report.
+    container.textContent = ''; // Remove previous report.
 
     let element;
     try {
@@ -102,7 +102,7 @@ class ReportRenderer {
 
       // Hook in JS features and add page-level event listeners after the report
       // is in the document.
-      this._reportFeatures.attach(report);
+      this._reportUIFeatures.addUIFeatures(report);
     } catch (e) {
       element = container.appendChild(this._renderException(e));
     }
@@ -228,22 +228,42 @@ class ReportRenderer {
 
   /**
    * @param {!ReportRenderer.ReportJSON} report
+   * @return {!DocumentFragment}
+   */
+  _renderReportNav(report) {
+    const leftNav = this._dom.cloneTemplate('#tmpl-lh-leftnav');
+
+    leftNav.querySelector('.leftnav__header__version').textContent =
+        `Version: ${report.lighthouseVersion}`;
+
+    const nav = leftNav.querySelector('.lh-leftnav');
+    for (const category of report.reportCategories) {
+      const item = this._dom.cloneTemplate('#tmpl-lh-leftnav__items', leftNav);
+      item.querySelector('.lh-leftnav__item').textContent = category.name;
+      nav.appendChild(item);
+    }
+    return leftNav;
+  }
+
+  /**
+   * @param {!ReportJSON} report
    * @return {!Element}
    */
   _renderReport(report) {
-    const container = this._dom.createElement('div', 'lh-content');
-    const element = container.appendChild(this._dom.createElement('div', 'lh-report'));
+    const container = this._dom.createElement('div', 'lh-container');
 
-    element.appendChild(this._renderReportHeader(report));
+    container.appendChild(this._renderReportHeader(report)); // sticker header goes at the top.
+    container.appendChild(this._renderReportNav(report));
 
-    const categories = element.appendChild(this._dom.createElement('div', 'lh-categories'));
+    const reportSection = container.appendChild(this._dom.createElement('div', 'lh-report'));
+    const categories = reportSection.appendChild(this._dom.createElement('div', 'lh-categories'));
     for (const category of report.reportCategories) {
       categories.appendChild(this._renderCategory(category));
     }
 
-    element.appendChild(this._renderReportFooter(report));
+    reportSection.appendChild(this._renderReportFooter(report));
 
-    return element;
+    return container;
   }
 
   /**

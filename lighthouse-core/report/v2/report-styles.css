@@ -28,7 +28,9 @@
   --warning-color: #757575; /* md grey 600 */
 
   --report-border-color: #ccc;
+  --report-content-width: 1280px;
   --report-width: 850px;
+  --report-menu-width: 280px;
 
   --lh-score-highlight-bg: #fafafa;
   --lh-score-icon-background-size: 17px;
@@ -46,6 +48,7 @@ body {
   font-size: var(--body-font-size);
   margin: 0;
   line-height: var(--body-line-height);
+  background: #f5f5f5;
 }
 
 [hidden] {
@@ -58,6 +61,11 @@ a {
 
 summary {
   cursor: pointer;
+}
+
+.lh-details {
+  font-size: smaller;
+  margin-top: var(--default-padding);
 }
 
 .lh-details[open] summary {
@@ -279,19 +287,25 @@ summary {
 
 /* Report */
 
+.lh-container {
+  display: flex;
+  max-width: var(--report-content-width);
+  margin: 0 auto;
+}
+
 .lh-report {
   max-width: var(--report-width);
-  margin: 0 auto;
+  margin-left: var(--report-menu-width);
+  background-color: #fff;
 }
 
 .lh-exception {
   font-size: large;
 }
 
-.lighthouse-categories {
+.lh-categories {
   padding: calc(var(--default-padding) * 2) 0;
-  max-width: var(--report-width);
-  margin: 0 auto;
+  /*max-width: var(--report-width);*/
   margin-top: var(--report-header-height);
 }
 
@@ -359,6 +373,7 @@ summary.lh-passed-audits-summary::-webkit-details-marker {
   -webkit-font-smoothing: antialiased;
   bottom: 0;
   left: 0;
+  z-index: 3;
 }
 
 #lh-log.show {
@@ -367,6 +382,9 @@ summary.lh-passed-audits-summary::-webkit-details-marker {
 }
 
 @media screen and (max-width: 767px) {
+  .lh-report {
+    margin-left: 0;
+  }
   .lh-category {
     padding: 24px var(--default-padding);
   }
@@ -375,6 +393,9 @@ summary.lh-passed-audits-summary::-webkit-details-marker {
 @media print {
   body {
     -webkit-print-color-adjust: exact; /* print background colors */
+  }
+  .lh-report {
+    margin-left: 0;
   }
   .lh-categories {
     margin-top: 0;

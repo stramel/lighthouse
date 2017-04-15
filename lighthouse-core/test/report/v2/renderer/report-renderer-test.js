@@ -24,7 +24,7 @@ const URL = require('../../../../lib/url-shim');
 const DOM = require('../../../../report/v2/renderer/dom.js');
 const DetailsRenderer = require('../../../../report/v2/renderer/details-renderer.js');
 const Logger = require('../../../../report/v2/renderer/logger.js');
-const ReportFeatures = require('../../../../report/v2/renderer/report-features.js');
+const ReportUIFeatures = require('../../../../report/v2/renderer/report-features.js');
 const ReportRenderer = require('../../../../report/v2/renderer/report-renderer.js');
 const sampleResults = require('../../../results/sample_v2.json');
 
@@ -36,7 +36,8 @@ describe('ReportRenderer V2', () => {
   before(() => {
     global.URL = URL;
     global.Logger = Logger;
-    global.ReportFeatures = ReportFeatures;
+    global.ReportUIFeatures = ReportUIFeatures;
+
     // Stub out matchMedia for Node.
     global.matchMedia = function() {
       return {
@@ -53,7 +54,7 @@ describe('ReportRenderer V2', () => {
   after(() => {
     global.URL = undefined;
     global.Logger = undefined;
-    global.ReportFeatures = undefined;
+    global.ReportUIFeatures = undefined;
     global.matchMedia = undefined;
   });
 
@@ -84,9 +85,10 @@ describe('ReportRenderer V2', () => {
     it('should render a report', () => {
       const container = renderer._dom._document.body;
       const output = renderer.renderReport(sampleResults, container);
-      assert.ok(output.classList.contains('lh-report'));
       assert.ok(container.contains(output), 'report appended to container');
-      assert.ok(container.querySelector('.lh-header'), 'report has header');
+      assert.ok(output.classList.contains('lh-container'));
+      assert.ok(output.querySelector('.lh-header'), 'has a header');
+      assert.ok(output.querySelector('.lh-report'), 'has report body');
     });
 
     it('renders additional reports by replacing the existing one', () => {
