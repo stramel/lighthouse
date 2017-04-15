@@ -488,9 +488,9 @@ describe('GatherRunner', function() {
     return GatherRunner.run(passes, options)
       .then(artifacts => {
         assert.ok(artifacts.traces.firstPass);
-        assert.ok(artifacts.networkRecords.firstPass);
+        assert.ok(artifacts.networkRecords['firstPass' + 'DEPRECATED']);
         assert.ok(artifacts.traces.secondPass);
-        assert.ok(artifacts.networkRecords.secondPass);
+        assert.ok(artifacts.networkRecords['secondPass' + 'DEPRECATED']);
       });
   });
 

@@ -61,9 +61,9 @@ class UnusedBytes extends Audit {
    */
   static audit(artifacts) {
     const devtoolsLogs = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
-    Audit.checkNow(artifacts);
+    Audit.__tempNetRecordsAvailCheck__(artifacts);
     return artifacts.requestNetworkRecords(devtoolsLogs).then(networkRecords => {
-      Audit.dieNow(networkRecords, artifacts);
+      Audit.__tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts);
 
       return artifacts.requestNetworkThroughput(networkRecords).then(networkThroughput =>
         Promise.resolve(this.audit_(artifacts, networkRecords)).then(result =>
