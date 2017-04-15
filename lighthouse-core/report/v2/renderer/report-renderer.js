@@ -243,7 +243,10 @@ class ReportRenderer {
     const nav = leftNav.querySelector('.lh-leftnav');
     for (const category of report.reportCategories) {
       const item = this._dom.cloneTemplate('#tmpl-lh-leftnav__items', leftNav);
-      item.querySelector('.lh-leftnav__item').textContent = category.name;
+      item.querySelector('.leftnav-item__category').textContent = category.name;
+      const score = item.querySelector('.leftnav-item__score');
+      score.classList.add(`lh-score__value--${calculateRating(category.score)}`);
+      score.textContent = Math.round(formatNumber(category.score));
       nav.appendChild(item);
     }
     return leftNav;

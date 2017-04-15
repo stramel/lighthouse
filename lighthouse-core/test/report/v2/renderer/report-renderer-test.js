@@ -131,6 +131,18 @@ describe('ReportRenderer V2', () => {
       });
     });
 
+    it('renders a left nav', () => {
+      const header = renderer._renderReportNav(sampleResults);
+      assert.equal(header.querySelectorAll('.lh-leftnav__item').length, 4);
+
+      const categories = header.querySelectorAll('.leftnav-item__category');
+      const scores = header.querySelectorAll('.leftnav-item__score');
+      sampleResults.reportCategories.forEach((cat, i) => {
+        assert.equal(categories[i].textContent, cat.name);
+        assert.equal(scores[i].textContent, Math.round(ReportRenderer.formatNumber(cat.score)));
+      });
+    });
+
     it('renders a footer', () => {
       const footer = renderer._renderReportFooter(sampleResults);
       const footerContent = footer.querySelector('.lh-footer').textContent;
