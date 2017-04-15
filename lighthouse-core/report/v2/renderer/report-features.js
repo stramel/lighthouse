@@ -15,7 +15,7 @@
  */
 'use strict';
 
-/* globals document window URL Blob Logger */
+/* globals self URL Blob Logger */
 
 class ReportUIFeatures {
 
@@ -33,11 +33,14 @@ class ReportUIFeatures {
     this.onKeyDown = this.onKeyDown.bind(this);
     this.printShortCutDetect = this.printShortCutDetect.bind(this);
 
-    const el = this._document.createElement('div');
-    el.id = 'lh-log';
-    this._document.body.appendChild(el);
-
-    this.logger = new Logger(el);
+    // Add logger to page.
+    let loggerEl = this._document.querySelector('#lh-log');
+    if (!loggerEl) {
+      loggerEl = this._document.createElement('div');
+      loggerEl.id = 'lh-log';
+      this._document.body.appendChild(loggerEl);
+    }
+    this.logger = new Logger(loggerEl);
   }
 
   _addEventListeners() {
@@ -56,7 +59,7 @@ class ReportUIFeatures {
 
   /**
    * Adds export button and print functionality to the report.
-   * @param {!ReportJSON} report
+   * @param {!ReportRenderer.ReportJSON} report
    */
   addUIFeatures(report) {
     this.json = report;
@@ -83,8 +86,8 @@ class ReportUIFeatures {
    * Copies the report JSON to the clipboard (if supported by the browser).
    */
   onCopyButtonClick() {
-    if (window.ga) {
-      window.ga('send', 'event', 'report', 'copy');
+    if (self.ga) {
+      self.ga('send', 'event', 'report', 'copy');
     }
 
     try {
@@ -139,7 +142,7 @@ class ReportUIFeatures {
         break;
       case 'print':
         this.expandAllDetails();
-        window.print();
+        self.print();
         break;
       case 'save-json': {
         const jsonStr = JSON.stringify(this.json, null, 2);
@@ -147,6 +150,10 @@ class ReportUIFeatures {
         break;
       }
       case 'save-html': {
+        // Hide opened UI elements before capturing the page.
+        this.logger.hide();
+        this.closeExportDropdown();
+
         const htmlStr = this._document.documentElement.outerHTML;
         try {
           this._saveFile(new Blob([htmlStr], {type: 'text/html'}));
@@ -183,18 +190,18 @@ class ReportUIFeatures {
     // after it's created. Normally, we could also listen for the popup window's
     // load event, however it is cross-domain and won't fire. Instead, listen
     // for a message from the target app saying "I'm open".
-    window.addEventListener('message', function msgHandler(e) {
+    self.addEventListener('message', function msgHandler(e) {
       if (e.origin !== VIEWER_ORIGIN) {
         return;
       }
 
       if (e.data.opened) {
         popup.postMessage({lhresults: this.json}, VIEWER_ORIGIN);
-        window.removeEventListener('message', msgHandler);
+        self.removeEventListener('message', msgHandler);
       }
     }.bind(this));
 
-    const popup = window.open(VIEWER_URL, '_blank');
+    const popup = self.open(VIEWER_URL, '_blank');
   }
 
   /**
@@ -232,12 +239,12 @@ class ReportUIFeatures {
    */
   _setUpCollapseDetailsAfterPrinting() {
     // FF and IE implement these old events.
-    if ('onbeforeprint' in window) {
-      window.addEventListener('afterprint', this.collapseAllDetails);
+    if ('onbeforeprint' in self) {
+      self.addEventListener('afterprint', this.collapseAllDetails);
     } else {
       // Note: FF implements both window.onbeforeprint and media listeners. However,
       // it doesn't matchMedia doesn't fire when matching 'print'.
-      window.matchMedia('print').addListener(mql => {
+      self.matchMedia('print').addListener(mql => {
         if (mql.matches) {
           this.expandAllDetails();
         } else {
@@ -251,14 +258,14 @@ class ReportUIFeatures {
    * @param {!Blob|!File} blob The file to save.
    */
   _saveFile(blob) {
-    const filename = window.getFilenamePrefix({
+    const filename = self.getFilenamePrefix({
       url: this.json.url,
       generatedTime: this.json.generatedTime
     });
 
     const ext = blob.type.match('json') ? '.json' : '.html';
 
-    const a = document.createElement('a');
+    const a = this._document.createElement('a');
     a.download = `${filename}${ext}`;
     a.href = URL.createObjectURL(blob);
     this._document.body.appendChild(a); // Firefox requires anchor to be in the DOM.
@@ -272,4 +279,6 @@ class ReportUIFeatures {
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = ReportUIFeatures;
+} else {
+  self.ReportUIFeatures = ReportUIFeatures;
 }

@@ -22,7 +22,7 @@
  * Dummy text for ensuring report robustness: </script> pre$`post %%LIGHTHOUSE_JSON%%
  */
 
-/* globals self ReportUIFeatures */
+/* globals self */
 
 const RATINGS = {
   PASS: {label: 'pass', minScore: 75},
@@ -80,12 +80,14 @@ class ReportRenderer {
   /**
    * @param {!DOM} dom
    * @param {!DetailsRenderer} detailsRenderer
+   * @param {!ReportUIFeatures=} uiFeatures
+   *
    */
-  constructor(dom, detailsRenderer) {
+  constructor(dom, detailsRenderer, uiFeatures = null) {
     this._dom = dom;
     this._detailsRenderer = detailsRenderer;
     this._templateContext = this._dom.document();
-    this._reportUIFeatures = new ReportUIFeatures(this._dom.document());
+    this._uiFeatures = uiFeatures;
   }
 
   /**
@@ -100,9 +102,11 @@ class ReportRenderer {
     try {
       element = container.appendChild(this._renderReport(report));
 
-      // Hook in JS features and add page-level event listeners after the report
+      // Hook in JS features and page-level event listeners after the report
       // is in the document.
-      this._reportUIFeatures.addUIFeatures(report);
+      if (this._uiFeatures) {
+        this._uiFeatures.addUIFeatures(report);
+      }
     } catch (e) {
       element = container.appendChild(this._renderException(e));
     }

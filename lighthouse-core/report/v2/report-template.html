@@ -27,14 +27,18 @@ limitations under the License.
 <body>
   <noscript>Lighthouse report requires JavaScript. Please enable.</noscript>
   <div hidden>%%LIGHTHOUSE_TEMPLATES%%</div>
-  <main></main>
+
+  <main><!-- report populated here --></main>
+
   <script>%%LIGHTHOUSE_JAVASCRIPT%%</script>
   <script>window.__LIGHTHOUSE_JSON__ = %%LIGHTHOUSE_JSON%%;</script>
   <script>
     window.addEventListener('DOMContentLoaded', _ => {
       const dom = new DOM(document);
       const detailsRenderer = new DetailsRenderer(dom);
-      const renderer = new ReportRenderer(dom, detailsRenderer);
+      const features = new ReportUIFeatures(document);
+      const renderer = new ReportRenderer(dom, detailsRenderer, features);
+
       const container = document.querySelector('main');
       renderer.renderReport(window.__LIGHTHOUSE_JSON__, container);
     });

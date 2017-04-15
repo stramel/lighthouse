@@ -30,7 +30,7 @@
   <style>
     .lh-leftnav {
       width: var(--report-menu-width);
-      border-right: 1px solid var(--report-border-color);
+      border-right: 1px solid var(--report-secondary-border-color);
       position: fixed;
       height: 100%;
       background: #fff;
@@ -63,16 +63,6 @@
       background-color: #2238b3;
       background-size: 205px;
       background-blend-mode: luminosity;
-    }
-    .leftnav__header::after {
-      content: '';
-      display: block;
-      width: 90px;
-      height: 86px;
-      position: absolute;
-      bottom: 0;
-      right: 0;
-      background: url('data:image/svg+xml;utf-8,<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="86" height="86" viewBox="0 0 86 86"><title>Beta</title><defs><path id="b" d="M-11.704 13.144H125.58v30H-11.703z"/><filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="a"><feOffset dy="1" in="SourceAlpha" result="shadowOffsetOuter1"/><feGaussianBlur stdDeviation="1" in="shadowOffsetOuter1" result="shadowBlurOuter1"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0" in="shadowBlurOuter1"/></filter><path id="d" d="M.4 16.972h119v28.4H.4z"/><text id="f" font-family="Arial-BoldMT, Arial" font-size="13" font-weight="700" fill="#FFF"><tspan x="37.556" y="34.556">BETA</tspan></text><filter x="-50%" y="-50%" width="200%" height="200%" filterUnits="objectBoundingBox" id="e"><feOffset dy="1" in="SourceAlpha" result="shadowOffsetOuter1"/><feGaussianBlur stdDeviation=".5" in="shadowOffsetOuter1" result="shadowBlurOuter1"/><feColorMatrix values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.140964674 0" in="shadowBlurOuter1"/></filter></defs><g fill="none" fill-rule="evenodd"><g mask="url(#mask-2)" transform="rotate(135 55.44 44.523)"><use fill="#000" filter="url(#a)" xlink:href="#b"/><use fill="#CF3A3C" xlink:href="#b"/></g><g mask="url(#mask-2)" transform="rotate(-45 95 36)" fill="white" class=""><use filter="url(#e)" xlink:href="#f"/><use xlink:href="#f"/></g><path d="M8.5-.5l88.204 88.204M8.5-39.5l88.204 88.204" stroke="#FFF" stroke-linecap="square" stroke-dasharray="1,2" opacity=".386" mask="url(#mask-2)" transform="translate(-3)" style="&#10;    transform: rotate(90deg) translateY(81px);&#10;    transform-origin: bottom right;&#10;"/></g></svg>') top right no-repeat;
     }
     .leftnav__header__title {
       font-family: var(--text-font-family);
@@ -122,7 +112,7 @@
       height: var(--report-header-height);
       width: var(--report-width);
       max-width: 100%; /* support text-overflow on url */
-      border-bottom: 1px solid var(--report-border-color);
+      border-bottom: 1px solid var(--report-secondary-border-color);
       position: fixed;
       z-index: 1;
       will-change: transform;
@@ -172,7 +162,7 @@
     .lh-export__dropdown {
       position: absolute;
       background-color: #fff;
-      border: 1px solid #ccc;
+      border: 1px solid var(--report-border-color);
       border-radius: 3px;
       padding: calc(var(--default-padding) / 2) 0;
       cursor: pointer;
@@ -220,8 +210,8 @@
       position: absolute;
       width: 100%;
       background-color: var(--report-header-bg-color);
-      border-top: 1px solid var(--report-border-color);
-      border-bottom: 1px solid var(--report-border-color);
+      border-top: 1px solid var(--report-secondary-border-color);
+      border-bottom: 1px solid var(--report-secondary-border-color);
     }
     .lh-env__title {
       font-size: var(--header-font-size);
@@ -318,9 +308,8 @@
     .lh-footer {
       text-align: center;
       line-height: 90px;
-      border-top: 1px solid var(--report-border-color);
       background-color: var(--report-header-bg-color);
-      border-top: 1px solid var(--report-border-color);
+      border-top: 1px solid var(--report-secondary-border-color);
     }
   </style>
   <footer class="lh-footer">

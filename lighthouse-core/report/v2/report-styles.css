@@ -28,9 +28,10 @@
   --warning-color: #757575; /* md grey 600 */
 
   --report-border-color: #ccc;
-  --report-content-width: 1280px;
+  --report-secondary-border-color: #ebebeb;
   --report-width: 850px;
   --report-menu-width: 280px;
+  --report-content-width: calc(var(--report-width) + var(--report-menu-width));
 
   --lh-score-highlight-bg: #fafafa;
   --lh-score-icon-background-size: 17px;
@@ -291,10 +292,11 @@ summary {
   display: flex;
   max-width: var(--report-content-width);
   margin: 0 auto;
+  /*border-right: 1px solid var(--report-border-color);*/
+  /*border-left: 1px solid var(--report-border-color);*/
 }
 
 .lh-report {
-  max-width: var(--report-width);
   margin-left: var(--report-menu-width);
   background-color: #fff;
 }
@@ -305,7 +307,6 @@ summary {
 
 .lh-categories {
   padding: calc(var(--default-padding) * 2) 0;
-  /*max-width: var(--report-width);*/
   margin-top: var(--report-header-height);
 }
 
@@ -348,11 +349,16 @@ summary.lh-passed-audits-summary {
 }
 
 summary.lh-passed-audits-summary::-webkit-details-marker {
-  background: rgb(66, 175, 69);
+  background: var(--pass-color);
   color: white;
-  position:relative;
+  position: relative;
   content: '';
-  padding: 3px;
+  padding: 3px 3px 3px 6px;
+  border-radius: 2px;
+}
+
+.lh-passed-audits[open] summary.lh-passed-audits-summary::-webkit-details-marker {
+  padding: 3px 5px 3px 4px;
 }
 
 #lh-log {
