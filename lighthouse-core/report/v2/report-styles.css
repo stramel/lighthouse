@@ -349,8 +349,10 @@ summary {
 }
 
 summary.lh-passed-audits-summary {
-  margin: 10px 5px;
+  margin: var(--default-padding);
   font-size: 15px;
+  display: flex;
+  align-items: center;
 }
 
 summary.lh-passed-audits-summary::-webkit-details-marker {
