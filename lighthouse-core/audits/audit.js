@@ -17,6 +17,7 @@
 'use strict';
 
 const DEFAULT_PASS = 'defaultPass';
+const assert = require('assert');
 
 class Audit {
   /**
@@ -55,6 +56,32 @@ class Audit {
       debugString
     });
   }
+
+  static checkNow(artifacts) {
+    try {
+      artifacts.requestNetworkRecords([]);
+    } catch(e) {
+      e.fatal = true;
+      throw e;
+    }
+  }
+
+  static dieNow(networkRecords, artifacts) {
+    try {
+      const gatherRecords = artifacts.networkRecords[Audit.DEFAULT_PASS + 'FALLBACK'];
+      assert.strictEqual(networkRecords.length, gatherRecords.length);
+      for (let i = 0; i < networkRecords.length; i++) {
+        assert.strictEqual(networkRecords[i]._startTime, gatherRecords[i]._startTime);
+        assert.strictEqual(networkRecords[i]._wallIssueTime, gatherRecords[i]._wallIssueTime);
+        assert.strictEqual(networkRecords[i]._requestId, gatherRecords[i]._requestId);
+      }
+    } catch (e) {
+      e.fatal = true;
+      throw e;
+    }
+  }
+
+
 
   /**
    * @param {!Audit} audit
