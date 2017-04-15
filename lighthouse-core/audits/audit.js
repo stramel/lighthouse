@@ -67,6 +67,7 @@ class Audit {
   }
 
   static __tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts) {
+    return;
     try {
       const gatherRecords = artifacts.networkRecords[Audit.DEFAULT_PASS + 'DEPRECATED'];
       assert.strictEqual(networkRecords.length, gatherRecords.length);
@@ -76,6 +77,7 @@ class Audit {
         assert.strictEqual(networkRecords[i]._requestId, gatherRecords[i]._requestId);
       }
     } catch (e) {
+
       e.fatal = true;
       throw e;
     }
