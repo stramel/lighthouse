@@ -144,26 +144,28 @@ class NetworkRecorder extends EventEmitter {
         data.newPriority, data.timestamp);
   }
 
-  static recordsFromLogs(logs) {
-    const records = [];
-    const nr = new NetworkRecorder(records);
-    const dispatcher = method => {
+  dispatch(method, params) {
+    const getEventMethod = method => {
       switch (method) {
-        case 'Network.requestWillBeSent': return nr.onRequestWillBeSent;
-        case 'Network.requestServedFromCache': return nr.onRequestServedFromCache;
-        case 'Network.responseReceived': return nr.onResponseReceived;
-        case 'Network.dataReceived': return nr.onDataReceived;
-        case 'Network.loadingFinished': return nr.onLoadingFinished;
-        case 'Network.loadingFailed': return nr.onLoadingFailed;
-        case 'Network.resourceChangedPriority': return nr.onResourceChangedPriority;
+        case 'Network.requestWillBeSent': return this.onRequestWillBeSent;
+        case 'Network.requestServedFromCache': return this.onRequestServedFromCache;
+        case 'Network.responseReceived': return this.onResponseReceived;
+        case 'Network.dataReceived': return this.onDataReceived;
+        case 'Network.loadingFinished': return this.onLoadingFinished;
+        case 'Network.loadingFailed': return this.onLoadingFailed;
+        case 'Network.resourceChangedPriority': return this.onResourceChangedPriority;
         default: return () => {};
       }
     };
+    getEventMethod(method)(params);
+  }
 
+  static recordsFromLogs(logs) {
+    const records = [];
+    const nr = new NetworkRecorder(records);
     logs.forEach(networkEvent => {
-      dispatcher(networkEvent.method)(networkEvent.params);
+      nr.dispatch(networkEvent.method, networkEvent.params);
     });
-
     return records;
   }
 }
