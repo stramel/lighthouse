@@ -99,30 +99,6 @@ describe('Module Tests', function() {
       });
   });
 
-  it('should return formatted audit results when given no aggregations', function() {
-    const exampleUrl = 'https://example.com/';
-    return lighthouse(exampleUrl, {
-      output: 'json'
-    }, {
-      auditResults: [{
-        score: true,
-        displayValue: '',
-        rawValue: true,
-        name: 'viewport',
-        category: 'Mobile Friendly',
-        description: 'HTML has a viewport <meta>'
-      }]
-    }).then(results => {
-      assert.ok(results.lighthouseVersion);
-      assert.ok(results.generatedTime);
-      assert.equal(results.url, exampleUrl);
-      assert.equal(results.initialUrl, exampleUrl);
-      assert.ok(Array.isArray(results.aggregations));
-      assert.equal(results.aggregations.length, 0);
-      assert.ok(results.audits.viewport);
-    });
-  });
-
   it('should return a list of audits', function() {
     assert.ok(Array.isArray(lighthouse.getAuditList()));
   });

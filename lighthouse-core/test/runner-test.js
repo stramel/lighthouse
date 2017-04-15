@@ -106,6 +106,9 @@ describe('Runner', () => {
         recordTrace: true,
         gatherers: []
       }],
+      audits: [
+        'user-timings'
+      ]
     });
 
     // Arrange for driver to return bad trace.
@@ -283,43 +286,8 @@ describe('Runner', () => {
       .then(_ => {
         assert.ok(false);
       }, err => {
-        assert.ok(/The config must provide passes/.test(err.message));
+        assert.ok(/config has defined no audits/.test(err.message));
       });
-  });
-
-  it('accepts existing auditResults', () => {
-    const url = 'https://example.com';
-    const config = new Config({
-      auditResults: [{
-        name: 'content-width',
-        rawValue: true,
-        score: true,
-        displayValue: ''
-      }],
-
-      aggregations: [{
-        name: 'Aggregation',
-        description: '',
-        scored: true,
-        categorizable: true,
-        items: [{
-          name: 'name',
-          description: 'description',
-          audits: {
-            'content-width': {
-              expectedValue: true,
-              weight: 1
-            }
-          }
-        }]
-      }]
-    });
-
-    return Runner.run(null, {url, config, driverMock}).then(results => {
-      // Mostly checking that this did not throw, but check representative values.
-      assert.equal(results.initialUrl, url);
-      assert.strictEqual(results.audits['content-width'].rawValue, true);
-    });
   });
 
   it('returns reportCategories', () => {
