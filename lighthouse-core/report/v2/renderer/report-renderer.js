@@ -133,7 +133,7 @@ class ReportRenderer {
   }
 
   /**
-   * Define a custom element for <templates> to be extracted from. For example:
+   * Define a custom element for <template>s to be extracted from. For example:
    *     this.setTemplateContext(new DOMParser().parseFromString(htmlStr, 'text/html'))
    * @param {!Document|!Element} context
    */
@@ -194,7 +194,7 @@ class ReportRenderer {
    * @return {!DocumentFragment}
    */
   _renderReportHeader(report) {
-    const header = this._dom.cloneTemplate('#tmpl-lh-heading');
+    const header = this._dom.cloneTemplate('#tmpl-lh-heading', this._templateContext);
     header.querySelector('.lh-config__timestamp').textContent =
         formatDateTime(report.generatedTime);
     const url = header.querySelector('.lh-metadata__url');
@@ -219,7 +219,7 @@ class ReportRenderer {
    * @return {!DocumentFragment}
    */
   _renderReportFooter(report) {
-    const footer = this._dom.cloneTemplate('#tmpl-lh-footer');
+    const footer = this._dom.cloneTemplate('#tmpl-lh-footer', this._templateContext);
     footer.querySelector('.lh-footer__version').textContent = report.lighthouseVersion;
     footer.querySelector('.lh-footer__timestamp').textContent =
         formatDateTime(report.generatedTime);
@@ -231,7 +231,7 @@ class ReportRenderer {
    * @return {!DocumentFragment}
    */
   _renderReportNav(report) {
-    const leftNav = this._dom.cloneTemplate('#tmpl-lh-leftnav');
+    const leftNav = this._dom.cloneTemplate('#tmpl-lh-leftnav', this._templateContext);
 
     leftNav.querySelector('.leftnav__header__version').textContent =
         `Version: ${report.lighthouseVersion}`;
