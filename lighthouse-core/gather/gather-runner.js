@@ -357,10 +357,11 @@ class GatherRunner {
               const passName = config.passName || Audit.DEFAULT_PASS;
               if (config.recordTrace) {
                 tracingData.traces[passName] = passData.trace;
-                tracingData.devtoolsLogs[passName] = passData.devtoolsLog;
               }
-              config.recordNetwork &&
-                  (tracingData.networkRecords[passName] = passData.networkRecords);
+              tracingData.devtoolsLogs[passName] = passData.devtoolsLog;
+
+             // DD SOMETHING WITH
+              tracingData.networkRecords[passName + 'FALLBACK'] = passData.networkRecords;
 
               if (passIndex === 0) {
                 urlAfterRedirects = runOptions.url;
