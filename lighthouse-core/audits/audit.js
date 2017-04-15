@@ -57,7 +57,7 @@ class Audit {
     });
   }
 
-  static checkNow(artifacts) {
+  static __tempNetRecordsAvailCheck__(artifacts) {
     try {
       artifacts.requestNetworkRecords([]);
     } catch(e) {
@@ -66,9 +66,9 @@ class Audit {
     }
   }
 
-  static dieNow(networkRecords, artifacts) {
+  static __tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts) {
     try {
-      const gatherRecords = artifacts.networkRecords[Audit.DEFAULT_PASS + 'FALLBACK'];
+      const gatherRecords = artifacts.networkRecords[Audit.DEFAULT_PASS + 'DEPRECATED'];
       assert.strictEqual(networkRecords.length, gatherRecords.length);
       for (let i = 0; i < networkRecords.length; i++) {
         assert.strictEqual(networkRecords[i]._startTime, gatherRecords[i]._startTime);
@@ -80,8 +80,6 @@ class Audit {
       throw e;
     }
   }
-
-
 
   /**
    * @param {!Audit} audit

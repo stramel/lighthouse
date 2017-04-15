@@ -108,7 +108,7 @@ class Styles extends Gatherer {
 
           const parsedContent = parser.parse(styleHeader.content);
           if (parsedContent.error) {
-            const error = parsedContent.error.slice(0, 100);
+            const error = parsedContent.error.toString().slice(0, 100);
             log.warn('Styles Gatherer', `Could not parse content: ${error}…`);
             styleHeader.parsedContent = [];
           } else {

@@ -57,7 +57,7 @@ class TotalByteWeight extends Audit {
   static audit(artifacts) {
     const devtoolsLogs = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
     return artifacts.requestNetworkRecords(devtoolsLogs).then(networkRecords => {
-      Audit.dieNow(networkRecords, artifacts);
+      Audit.__tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts);
 
       return artifacts.requestNetworkThroughput(networkRecords).then(networkThroughput => {
         let totalBytes = 0;

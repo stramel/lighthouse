@@ -49,7 +49,7 @@ class UsesHTTP2Audit extends Audit {
   static audit(artifacts) {
     const devtoolsLogs = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
     return artifacts.requestNetworkRecords(devtoolsLogs).then(networkRecords => {
-            Audit.dieNow(networkRecords, artifacts);
+      Audit.__tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts);
       const finalHost = new URL(artifacts.URL.finalUrl).host;
 
       // Filter requests that are on the same host as the page and not over h2.

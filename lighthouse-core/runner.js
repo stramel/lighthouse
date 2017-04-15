@@ -69,7 +69,9 @@ class Runner {
     if (opts.flags.processLatestRun) {
       validArtifactsAndAudits = true;
       validPassesAndAudits = false;
-      config.artifacts = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'latest.artifacts.log'), 'utf8'));
+      config.artifacts = JSON.parse(
+        fs.readFileSync(path.join(process.cwd(), 'latest.artifacts.log'), 'utf8')
+      );
     }
 
     // If there are passes run the GatherRunner and gather the artifacts. If not, we will need
@@ -80,7 +82,10 @@ class Runner {
         // Finally set up the driver to gather.
         run = run.then(_ => GatherRunner.run(config.passes, opts));
         if (opts.flags.dumpArtifacts) {
-          run = run.then(artifacts => assetSaver.saveArtifacts(artifacts, path.join(process.cwd(), 'latest')))
+          run = run
+            .then(artifacts =>
+              assetSaver.saveArtifacts(artifacts, path.join(process.cwd(), 'latest'))
+            )
             .then(_ => {
               return Promise.reject(new Error('Artifacts dumped and run ceased.'));
             });

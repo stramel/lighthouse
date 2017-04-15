@@ -101,7 +101,7 @@ class CriticalRequestChains extends Audit {
     const devtoolsLogs = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
     return Promise.resolve().then(_ =>
       artifacts.requestNetworkRecords(devtoolsLogs).then(networkRecords => {
-        Audit.dieNow(networkRecords, artifacts);
+        Audit.__tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts);
         return artifacts.requestCriticalRequestChains(networkRecords).then(chains => {
           let chainCount = 0;
           function walk(node, depth) {

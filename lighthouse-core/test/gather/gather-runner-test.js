@@ -488,9 +488,9 @@ describe('GatherRunner', function() {
     return GatherRunner.run(passes, options)
       .then(artifacts => {
         assert.ok(artifacts.traces.firstPass);
-        assert.ok(artifacts.networkRecords.firstPass);
+        assert.ok(artifacts.networkRecords['firstPass' + 'DEPRECATED']);
         assert.ok(artifacts.traces.secondPass);
-        assert.ok(artifacts.networkRecords.secondPass);
+        assert.ok(artifacts.networkRecords['secondPass' + 'DEPRECATED']);
       });
   });
 
@@ -581,14 +581,13 @@ describe('GatherRunner', function() {
 
     return GatherRunner.run(passes, options)
         .then(artifacts => {
-          const networkRecords = artifacts.networkRecords.firstPass;
-          const p = artifacts.requestCriticalRequestChains(networkRecords);
-          return p.then(chains => {
-            // fakeDriver will include networkRecords built from fixtures/perflog.json
-            assert.ok(chains['93149.1']);
-            assert.ok(chains['93149.1'].request);
-            assert.ok(chains['93149.1'].children);
-          });
+          const devtoolsLogs = artifacts.devtoolsLogs.firstPass;
+          return artifacts.requestNetworkRecords(devtoolsLogs).then(
+            artifacts.requestCriticalRequestChains).then(chains => {
+              assert.ok(chains['93149.1']);
+              assert.ok(chains['93149.1'].request);
+              assert.ok(chains['93149.1'].children);
+            });
         });
   });
 
