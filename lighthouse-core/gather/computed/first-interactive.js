@@ -26,6 +26,23 @@ const LONELY_TASK_NEIGHBOR_DISTANCE = 1000;
 const MAX_QUIET_WINDOW_SIZE = 5000;
 const TRACE_BUSY_MSG = 'trace was busy the entire time';
 
+/**
+ * @fileoverview This artifact identifies the time the page is "first interactive" as defined below
+ * @see https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c/edit#
+ *
+ * First Interactive marks the first moment when a website is minimally interactive:
+ *    > Enough (but maybe not all) UI components shown on the screen are interactive
+ *    > The page responds to user input in a reasonable time on average, but it’s ok if this
+ *      response is not always immediate.
+ *
+ * First Interactive is defined as the first period after FMP of N-seconds where there are no
+ * long tasks that are not "lonely".
+ *
+ *    > t = time in seconds since FMP
+ *    > N = 4 * e^(-0.045 * t) + 1
+ *    > a "lonely" task is an envelope of 250ms that contains a set of long tasks that have at least
+ *      1 second of padding before and after the envelope that contain no long tasks.
+ */
 class FirstInteractive extends ComputedArtifact {
   get name() {
     return 'FirstInteractive';
@@ -85,23 +102,31 @@ class FirstInteractive extends ComputedArtifact {
       return FMP;
     }
 
+    // FirstInteractive must start at the end of a long task, consider each long task and
+    // examine the window that follows it.
     for (let i = 0; i < longTasks.length; i++) {
       const event = longTasks[i];
       const windowStart = event.end;
       const windowSize = FirstInteractive.getRequiredWindowSizeInMs(windowStart - FMP);
       const windowEnd = windowStart + windowSize;
+
+      // Check that we have a long enough trace
       if (windowEnd > traceEnd) {
         throw new Error(TRACE_BUSY_MSG);
       }
 
       let isQuiet = true;
+      // Loop over all the long tasks within the window
+      // All tasks that we find in the window must be lonely or the window isn't quiet.
       for (let j = i + 1; j < longTasks.length && longTasks[j].start < windowEnd; j++) {
         const lastLonelyTaskIndex = FirstInteractive.getLastLonelyTaskIndex(longTasks, j, FMP,
             traceEnd);
         if (lastLonelyTaskIndex === -1) {
+          // We found a task that isn't lonely, this window isn't quiet
           isQuiet = false;
           break;
         } else {
+          // Skip over the rest of the lonely task envelope
           j = lastLonelyTaskIndex;
         }
       }
@@ -143,9 +168,6 @@ class FirstInteractive extends ComputedArtifact {
   }
 
   /**
-   * Identify the time the page is "first interactive"
-   * @see https://docs.google.com/document/d/1GGiI9-7KeY3TPqS3YT271upUVimo-XiL5mwWorDUD4c/edit#
-   *
    * @param {!Object} trace
    * @param {!Object} artifacts
    * @return {!Object}

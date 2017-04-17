@@ -131,7 +131,7 @@ class Metrics {
         }
       },
       {
-        name: 'First Interactive (vAlpha)',
+        name: 'First Interactive (vBeta)',
         id: 'ttfi',
         getTs: auditResults => {
           const ttfiExt = auditResults['first-interactive'].extendedInfo;

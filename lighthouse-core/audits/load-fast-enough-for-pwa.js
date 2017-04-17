@@ -64,19 +64,19 @@ class LoadFastEnough4Pwa extends Audit {
 
     const trace = artifacts.traces[Audit.DEFAULT_PASS];
     return artifacts.requestFirstInteractive(trace, artifacts).then(firstInteractive => {
-      const ttfiValue = firstInteractive.timeInMs;
-      const isFast = ttfiValue < MAXIMUM_TTI;
+      const timeToFirstInteractive = firstInteractive.timeInMs;
+      const isFast = timeToFirstInteractive < MAXIMUM_TTI;
 
       const extendedInfo = {
         formatter: Formatter.SUPPORTED_FORMATS.NULL,
-        value: {areLatenciesAll3G, allRequestLatencies, isFast, ttfiValue}
+        value: {areLatenciesAll3G, allRequestLatencies, isFast, timeToFirstInteractive}
       };
 
       if (!areLatenciesAll3G) {
         return {
           rawValue: false,
           // eslint-disable-next-line max-len
-          debugString: `First Interactive was found at ${ttfiValue.toLocaleString()}, however, the network request latencies were not sufficiently realistic, so the performance measurements cannot be trusted.`,
+          debugString: `First Interactive was found at ${timeToFirstInteractive.toLocaleString()}, however, the network request latencies were not sufficiently realistic, so the performance measurements cannot be trusted.`,
           extendedInfo
         };
       }
@@ -85,7 +85,7 @@ class LoadFastEnough4Pwa extends Audit {
         return {
           rawValue: false,
            // eslint-disable-next-line max-len
-          debugString: `Under 3G conditions, First Interactive was at ${ttfiValue.toLocaleString()}. More details in the "Performance" section.`,
+          debugString: `Under 3G conditions, First Interactive was at ${timeToFirstInteractive.toLocaleString()}. More details in the "Performance" section.`,
           extendedInfo
         };
       }
