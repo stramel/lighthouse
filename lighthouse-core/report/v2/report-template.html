@@ -36,8 +36,9 @@ limitations under the License.
     window.addEventListener('DOMContentLoaded', _ => {
       const dom = new DOM(document);
       const detailsRenderer = new DetailsRenderer(dom);
+      const categoryRenderer = new CategoryRenderer(dom, detailsRenderer);
       const features = new ReportUIFeatures(document);
-      const renderer = new ReportRenderer(dom, detailsRenderer, features);
+      const renderer = new ReportRenderer(dom, categoryRenderer, features);
 
       const container = document.querySelector('main');
       renderer.renderReport(window.__LIGHTHOUSE_JSON__, container);

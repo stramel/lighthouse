@@ -19,15 +19,15 @@ const Audit = require('../../audits/user-timings.js');
 const assert = require('assert');
 const traceEvents = require('../fixtures/traces/trace-user-timings.json');
 
-const GatherRunner = require('../../gather/gather-runner.js');
-const computedArtifacts = GatherRunner.instantiateComputedArtifacts();
+const Runner = require('../../runner.js');
+const computedArtifacts = Runner.instantiateComputedArtifacts();
 
 function generateArtifactsWithTrace(trace) {
-  return Object.assign(computedArtifacts, {
+  return Object.assign({
     traces: {
       [Audit.DEFAULT_PASS]: {traceEvents: Array.isArray(trace) ? trace : trace.traceEvents}
     }
-  });
+  }, computedArtifacts);
 }
 
 /* eslint-env mocha */
