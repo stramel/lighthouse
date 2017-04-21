@@ -53,9 +53,10 @@ function resolveLocalOrCwd(payloadPath) {
  * Launch Chrome and do a full Lighthouse run.
  * @param {string} url
  * @param {string} configPath
+ * @param {string=} saveAssetsPath
  * @return {!LighthouseResults}
  */
-function runLighthouse(url, configPath) {
+function runLighthouse(url, configPath, saveAssetsPath) {
   const command = 'node';
   const args = [
     'lighthouse-cli/index.js',
@@ -65,6 +66,11 @@ function runLighthouse(url, configPath) {
     '--quiet',
     '--port=0'
   ];
+
+  if (saveAssetsPath) {
+    args.push(`--save-assets`);
+    args.push(`--output-path=${saveAssetsPath}`);
+  }
 
   // Lighthouse sometimes times out waiting to for a connection to Chrome in CI.
   // Watch for this error and retry relaunching Chrome and running Lighthouse up
@@ -87,6 +93,10 @@ function runLighthouse(url, configPath) {
     console.error(`Lighthouse run failed with exit code ${runResults.status}. stderr to follow:`);
     console.error(runResults.stderr);
     process.exit(runResults.status);
+  }
+
+  if (saveAssetsPath) {
+    return require(resolveLocalOrCwd(saveAssetsPath));
   }
 
   return JSON.parse(runResults.stdout);
@@ -244,7 +254,8 @@ const cli = yargs
   .help('help')
   .describe({
     'config-path': 'The path to the config JSON file',
-    'expectations-path': 'The path to the expected audit results file'
+    'expectations-path': 'The path to the expected audit results file',
+    'save-assets-to': 'The path to save the assets to',
   })
   .default('config-path', DEFAULT_CONFIG_PATH)
   .default('expectations-path', DEFAULT_EXPECTATIONS_PATH)
@@ -259,7 +270,7 @@ let passingCount = 0;
 let failingCount = 0;
 expectations.forEach(expected => {
   console.log(`Checking '${expected.initialUrl}'...`);
-  const results = runLighthouse(expected.initialUrl, configPath);
+  const results = runLighthouse(expected.initialUrl, configPath, cli['save-assets-to']);
   const collated = collateResults(results, expected);
   const counts = report(collated);
   passingCount += counts.passed;
