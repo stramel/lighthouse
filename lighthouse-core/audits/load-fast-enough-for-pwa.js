@@ -63,7 +63,7 @@ class LoadFastEnough4Pwa extends Audit {
         val === undefined || val > latency3gMin);
 
     const trace = artifacts.traces[Audit.DEFAULT_PASS];
-    return artifacts.requestFirstInteractive(trace, artifacts).then(firstInteractive => {
+    return artifacts.requestFirstInteractive(trace).then(firstInteractive => {
       const timeToFirstInteractive = firstInteractive.timeInMs;
       const isFast = timeToFirstInteractive < MAXIMUM_TTI;
 

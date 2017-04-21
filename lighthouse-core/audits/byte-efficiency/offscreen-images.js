@@ -124,7 +124,7 @@ class OffscreenImages extends Audit {
       return results;
     }, new Map());
 
-    return artifacts.requestFirstInteractive(trace, artifacts).then(firstInteractive => {
+    return artifacts.requestFirstInteractive(trace).then(firstInteractive => {
       const ttiTimestamp = firstInteractive.timestamp / 1000000;
       const results = Array.from(resultsMap.values()).filter(item => {
         const isWasteful = item.wastedBytes > IGNORE_THRESHOLD_IN_BYTES &&

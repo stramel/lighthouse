@@ -50,7 +50,7 @@ class FirstInteractiveMetric extends Audit {
    */
   static audit(artifacts) {
     const trace = artifacts.traces[Audit.DEFAULT_PASS];
-    return artifacts.requestFirstInteractive(trace, artifacts)
+    return artifacts.requestFirstInteractive(trace)
       .then(firstInteractive => {
         let score = 100 * distribution.computeComplementaryPercentile(firstInteractive.timeInMs);
         // Clamp the score to 0 <= x <= 100.
