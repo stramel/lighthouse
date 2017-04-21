@@ -47,7 +47,7 @@ describe('Speedline gatherer', () => {
 
     return speedlineGather.request({traceEvents: threeFrameTrace}).then(speedline => {
       assert.equal(Math.floor(speedline.speedIndex), 2040);
-      return assert.equal(Math.floor(speedline.perceptualSpeedIndex), 2066);
+      return assert.equal(Math.floor(speedline.perceptualSpeedIndex), 2030);
     });
   });
 
@@ -66,8 +66,8 @@ describe('Speedline gatherer', () => {
         // on a MacBook Air, one run is  1000-1500ms
         assert.ok(Date.now() - start < 50, 'Quick results come from the cache');
 
-        assert.ok(speedlineGather.cache.has(trace), 'Cache reports a match');
-        assert.equal(speedlineGather.cache.get(trace), speedline, 'Cache match matches');
+        assert.ok(speedlineGather._cache.has(trace), 'Cache reports a match');
+        assert.equal(speedlineGather._cache.get(trace), speedline, 'Cache match matches');
 
         return assert.equal(Math.floor(speedline.speedIndex), 577);
       });

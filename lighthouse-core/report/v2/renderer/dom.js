@@ -15,7 +15,7 @@
  */
 'use strict';
 
-/* globals URL */
+/* globals URL self */
 
 class DOM {
   /**
@@ -28,36 +28,44 @@ class DOM {
  /**
    * @param {string} name
    * @param {string=} className
-   * @param {!Object<string, string>=} attrs Attribute key/val pairs.
+   * @param {!Object<string, (string|undefined)>=} attrs Attribute key/val pairs.
+   *     Note: if an attribute key has an undefined value, this method does not
+   *     set the attribute on the node.
    * @return {!Element}
    */
-  createElement(name, className, attrs = {}) {
+  createElement(name, className, attrs) {
+    // TODO(all): adopt `attrs` default arg when https://codereview.chromium.org/2821773002/ lands
+    attrs = attrs || {};
     const element = this._document.createElement(name);
     if (className) {
       element.className = className;
     }
     Object.keys(attrs).forEach(key => {
-      element.setAttribute(key, attrs[key]);
+      const value = attrs[key];
+      if (typeof value !== 'undefined') {
+        element.setAttribute(key, value);
+      }
     });
     return element;
   }
 
   /**
    * @param {string} selector
+   * @param {!Document|!Element} context
    * @return {!DocumentFragment} A clone of the template content.
    * @throws {Error}
    */
-  cloneTemplate(selector) {
-    const template = this._document.querySelector(selector);
+  cloneTemplate(selector, context) {
+    const template = context.querySelector(selector);
     if (!template) {
       throw new Error(`Template not found: template${selector}`);
     }
-    return this._document.importNode(template.content, true);
+    return /** @type {!DocumentFragment} */ (this._document.importNode(template.content, true));
   }
 
   /**
    * @param {string} text
-   * @return {!HTMLSpanElement}
+   * @return {!Element}
    */
   createSpanFromMarkdown(text) {
     const element = this.createElement('span');
@@ -83,8 +91,17 @@ class DOM {
 
     return element;
   }
+
+  /**
+   * @return {!Document}
+   */
+  document() {
+    return this._document;
+  }
 }
 
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = DOM;
+} else {
+  self.DOM = DOM;
 }

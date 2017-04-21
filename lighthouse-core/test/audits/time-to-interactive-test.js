@@ -16,7 +16,7 @@
 'use strict';
 
 const TimeToInteractive = require('../../audits/time-to-interactive.js');
-const GatherRunner = require('../../gather/gather-runner.js');
+const Runner = require('../../runner.js');
 const assert = require('assert');
 
 const pwaTrace = require('../fixtures/traces/progressive-app.json');
@@ -24,12 +24,13 @@ const pwaTrace = require('../fixtures/traces/progressive-app.json');
 /* eslint-env mocha */
 describe('Performance: time-to-interactive audit', () => {
   it('evaluates valid input correctly', () => {
-    const artifacts = GatherRunner.instantiateComputedArtifacts();
-    artifacts.traces = {
-      [TimeToInteractive.DEFAULT_PASS]: {
-        traceEvents: pwaTrace
+    const artifacts = Object.assign({
+      traces: {
+        [TimeToInteractive.DEFAULT_PASS]: {
+          traceEvents: pwaTrace
+        }
       }
-    };
+    }, Runner.instantiateComputedArtifacts());
 
     return TimeToInteractive.audit(artifacts).then(output => {
       assert.equal(output.rawValue, 1105.8, output.debugString);
