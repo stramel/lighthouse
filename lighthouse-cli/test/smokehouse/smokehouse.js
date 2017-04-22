@@ -68,7 +68,7 @@ function runLighthouse(url, configPath, saveAssetsPath) {
   ];
 
   if (saveAssetsPath) {
-    args.push(`--save-assets`);
+    args.push('--save-assets');
     args.push(`--output-path=${saveAssetsPath}`);
   }
 

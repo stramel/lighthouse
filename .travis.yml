@@ -36,4 +36,4 @@ script:
 after_success:
 - npm run coveralls
 after_failure:
-- travis-artifacts upload --path perf-0.trace.json
+- grep 'No screenshots' perf.json && travis-artifacts upload --path perf-0.trace.json
