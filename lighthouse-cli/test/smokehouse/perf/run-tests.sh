@@ -9,7 +9,7 @@ expectations="lighthouse-cli/test/smokehouse/perf/expectations.js"
 save_assets=""
 
 if [[ "$CI" = true ]]; then
-  save_assets="--save-assets-to=perf.json"
+  save_assets="--save-assets-path=perf.json"
 fi
 
 npm run -s smokehouse -- --config-path=$config --expectations-path=$expectations "$save_assets"
