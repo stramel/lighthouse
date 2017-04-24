@@ -74,7 +74,7 @@ class ReportRenderer {
   _renderReport(report) {
     const element = this._dom.createElement('div', 'lh-report');
     for (const category of report.reportCategories) {
-      element.appendChild(this._categoryRenderer.render(category));
+      element.appendChild(this._categoryRenderer.render(category, report.reportTags));
     }
     return element;
   }

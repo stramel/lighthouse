@@ -142,7 +142,16 @@ class CategoryRenderer {
    * @param {!ReportRenderer.CategoryJSON} category
    * @return {!Element}
    */
-  render(category) {
+  render(category, tags) {
+    switch (category.id) {
+      case 'accessibility':
+        return this._renderAccessibilityCategory(category, tags);
+      default:
+        return this._renderDefaultCategory(category);
+    }
+  }
+
+  _renderDefaultCategory(category) {
     const element = this._dom.createElement('div', 'lh-category');
     element.appendChild(this._renderCategoryScore(category));
 
@@ -164,6 +173,69 @@ class CategoryRenderer {
     for (const audit of passedAudits) {
       passedElem.appendChild(this._renderAudit(audit));
     }
+    element.appendChild(passedElem);
+    return element;
+  }
+
+  _renderAuditGroup(audits, tag) {
+      const auditGroupElem = this._dom.createElement('details', 'lh-audit-group');
+      const auditGroupHeader = this._dom.createElement('div', 'lh-audit-group__header');
+      auditGroupHeader.textContent = tag.title;
+
+      const auditGroupDescription = this._dom.createElement('div', 'lh-audit-group__description');
+      auditGroupDescription.textContent = tag.description;
+
+      const auditGroupSummary = this._dom.createElement('summary', 'lh-audit-group__summary');
+      auditGroupSummary.appendChild(auditGroupHeader);
+
+      auditGroupElem.appendChild(auditGroupSummary);
+      auditGroupElem.appendChild(auditGroupDescription);
+      audits.forEach(audit => auditGroupElem.appendChild(this._renderAudit(audit)));
+      return auditGroupElem;
+  }
+
+  _renderAccessibilityCategory(category, tags) {
+    const element = this._dom.createElement('div', 'lh-category');
+    element.appendChild(this._renderCategoryScore(category));
+
+    const auditsGroupedByTag = category.audits.reduce((indexed, audit) => {
+      const tagId = audit.tags[0];
+      const groups = indexed[tagId] || {passed: [], failed: []};
+
+      if (audit.score === 100) {
+        groups.passed.push(audit);
+      } else {
+        groups.failed.push(audit);
+      }
+
+      indexed[tagId] = groups;
+      return indexed;
+    }, {});
+
+    const passedElements = [];
+    Object.keys(auditsGroupedByTag).forEach(tagId => {
+      const tag = tags[tagId];
+      const groups = auditsGroupedByTag[tagId];
+      if (groups.failed.length) {
+        const auditGroupElem = this._renderAuditGroup(groups.failed, tag);
+        auditGroupElem.open = true;
+        element.appendChild(auditGroupElem);
+      }
+
+      if (groups.passed.length) {
+        const auditGroupElem = this._renderAuditGroup(groups.passed, tag);
+        passedElements.push(auditGroupElem);
+      }
+    });
+
+    // don't create a passed section if there are no passed
+    if (!passedElements.length) return element;
+
+    const passedElem = this._dom.createElement('details', 'lh-passed-audits');
+    const passedSummary = this._dom.createElement('summary', 'lh-passed-audits-summary');
+    passedElem.appendChild(passedSummary);
+    passedSummary.textContent = `View ${passedElements.length} passed items`;
+    passedElements.forEach(elem => passedElem.appendChild(elem));
     element.appendChild(passedElem);
     return element;
   }

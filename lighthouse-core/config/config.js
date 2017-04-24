@@ -316,6 +316,7 @@ class Config {
     this._audits = Config.requireAudits(configJSON.audits, this._configDir);
     this._artifacts = expandArtifacts(configJSON.artifacts);
     this._categories = configJSON.categories;
+    this._tags = configJSON.tags;
 
     // validatePasses must follow after audits are required
     validatePasses(configJSON.passes, this._audits, this._configDir);
@@ -567,6 +568,11 @@ class Config {
   /** @type {Object<{audits: !Array<{id: string, weight: number}>}>} */
   get categories() {
     return this._categories;
+  }
+
+  /** @type {Object<{title: string, description: string}>} */
+  get tags() {
+    return this._tags;
   }
 }
 

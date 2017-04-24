@@ -589,6 +589,40 @@ module.exports = {
       }
     }]
   }],
+  "tags": {
+    "accessibility-color-contrast": {
+      "title": "Color Contrast Is Satisfactory",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+    "accessibility-describe-contents": {
+      "title": "Elements Describe Contents Well",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+    "accessibility-well-structured": {
+      "title": "Elements Are Well Structured",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+    "accessibility-aria": {
+      "title": "ARIA Attributes Follow Best Practices",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+    "accessibility-correct-attributes": {
+      "title": "Elements Use Attributes Correctly",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+    "accessibility-element-names": {
+      "title": "Elements Have Discernable Names",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+    "accessibility-language": {
+      "title": "Page Specifies Valid Language",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+    "accessibility-meta": {
+      "title": "Meta Tags Used Properly",
+      "description": "Screen readers and other assitive technologies require annotations to understand otherwise ambiguous content."
+    },
+  },
   "categories": {
     "pwa": {
       "name": "Progressive Web App",
@@ -632,41 +666,41 @@ module.exports = {
       "name": "Accessibility",
       "description": "These audits validate that your app [works for all users](https://developers.google.com/web/fundamentals/accessibility/).",
       "audits": [
-        {"id": "accesskeys", "weight": 1},
-        {"id": "aria-allowed-attr", "weight": 1},
-        {"id": "aria-required-attr", "weight": 1},
-        {"id": "aria-required-children", "weight": 1},
-        {"id": "aria-required-parent", "weight": 1},
-        {"id": "aria-roles", "weight": 1},
-        {"id": "aria-valid-attr-value", "weight": 1},
-        {"id": "aria-valid-attr", "weight": 1},
-        {"id": "audio-caption", "weight": 1},
-        {"id": "button-name", "weight": 1},
-        {"id": "bypass", "weight": 1},
-        {"id": "color-contrast", "weight": 1},
-        {"id": "definition-list", "weight": 1},
-        {"id": "dlitem", "weight": 1},
-        {"id": "document-title", "weight": 1},
-        {"id": "duplicate-id", "weight": 1},
-        {"id": "frame-title", "weight": 1},
-        {"id": "html-has-lang", "weight": 1},
-        {"id": "html-lang-valid", "weight": 1},
-        {"id": "image-alt", "weight": 1},
-        {"id": "input-image-alt", "weight": 1},
-        {"id": "label", "weight": 1},
-        {"id": "layout-table", "weight": 1},
-        {"id": "link-name", "weight": 1},
-        {"id": "list", "weight": 1},
-        {"id": "listitem", "weight": 1},
-        {"id": "meta-refresh", "weight": 1},
-        {"id": "meta-viewport", "weight": 1},
-        {"id": "object-alt", "weight": 1},
-        {"id": "tabindex", "weight": 1},
-        {"id": "td-headers-attr", "weight": 1},
-        {"id": "th-has-data-cells", "weight": 1},
-        {"id": "valid-lang", "weight": 1},
-        {"id": "video-caption", "weight": 1},
-        {"id": "video-description", "weight": 1},
+        {"id": "accesskeys", "weight": 1, "tags": ["accessibility-correct-attributes"]},
+        {"id": "aria-allowed-attr", "weight": 1, "tags": ["accessibility-aria"]},
+        {"id": "aria-required-attr", "weight": 1, "tags": ["accessibility-aria"]},
+        {"id": "aria-required-children", "weight": 1, "tags": ["accessibility-aria"]},
+        {"id": "aria-required-parent", "weight": 1, "tags": ["accessibility-aria"]},
+        {"id": "aria-roles", "weight": 1, "tags": ["accessibility-aria"]},
+        {"id": "aria-valid-attr-value", "weight": 1, "tags": ["accessibility-aria"]},
+        {"id": "aria-valid-attr", "weight": 1, "tags": ["accessibility-aria"]},
+        {"id": "audio-caption", "weight": 1, "tags": ["accessibility-correct-attributes"]},
+        {"id": "button-name", "weight": 1, "tags": ["accessibility-element-names"]},
+        {"id": "bypass", "weight": 1, "tags": ["accessibility-describe-contents"]},
+        {"id": "color-contrast", "weight": 1, "tags": ["accessibility-color-contrast"]},
+        {"id": "definition-list", "weight": 1, "tags": ["accessibility-well-structured"]},
+        {"id": "dlitem", "weight": 1, "tags": ["accessibility-well-structured"]},
+        {"id": "document-title", "weight": 1, "tags": ["accessibility-describe-contents"]},
+        {"id": "duplicate-id", "weight": 1, "tags": ["accessibility-well-structured"]},
+        {"id": "frame-title", "weight": 1, "tags": ["accessibility-describe-contents"]},
+        {"id": "html-has-lang", "weight": 1, "tags": ["accessibility-language"]},
+        {"id": "html-lang-valid", "weight": 1, "tags": ["accessibility-language"]},
+        {"id": "image-alt", "weight": 1, "tags": ["accessibility-correct-attributes"]},
+        {"id": "input-image-alt", "weight": 1, "tags": ["accessibility-correct-attributes"]},
+        {"id": "label", "weight": 1, "tags": ["accessibility-describe-contents"]},
+        {"id": "layout-table", "weight": 1, "tags": ["accessibility-describe-contents"]},
+        {"id": "link-name", "weight": 1, "tags": ["accessibility-element-names"]},
+        {"id": "list", "weight": 1, "tags": ["accessibility-well-structured"]},
+        {"id": "listitem", "weight": 1, "tags": ["accessibility-well-structured"]},
+        {"id": "meta-refresh", "weight": 1, "tags": ["accessibility-meta"]},
+        {"id": "meta-viewport", "weight": 1, "tags": ["accessibility-meta"]},
+        {"id": "object-alt", "weight": 1, "tags": ["accessibility-describe-contents"]},
+        {"id": "tabindex", "weight": 1, "tags": ["accessibility-correct-attributes"]},
+        {"id": "td-headers-attr", "weight": 1, "tags": ["accessibility-correct-attributes"]},
+        {"id": "th-has-data-cells", "weight": 1, "tags": ["accessibility-correct-attributes"]},
+        {"id": "valid-lang", "weight": 1, "tags": ["accessibility-language"]},
+        {"id": "video-caption", "weight": 1, "tags": ["accessibility-describe-contents"]},
+        {"id": "video-description", "weight": 1, "tags": ["accessibility-describe-contents"]},
       ]
     },
     "best-practices": {

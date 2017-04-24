@@ -245,6 +245,29 @@ body {
   font-size: 16px;
 }
 
+/* Audit Group */
+
+.lh-audit-group {
+  margin-top: var(--default-padding);
+}
+
+.lh-audit-group__header {
+  font-size: 18px;
+}
+
+.lh-audit-group__description {
+  font-size: 16px;
+  color: var(--secondary-text-color);
+  margin-top: calc(var(--default-padding) / 2);
+}
+
+.lh-audit-group__summary::-webkit-details-marker {
+  float: right;
+  width: 15px;
+  height: 15px;
+  margin: 0 12px;
+}
+
 /* Report */
 
 .lh-exception {
@@ -265,8 +288,8 @@ body {
   padding-top: 0;
 }
 
-.lh-category > .lh-audit,
-.lh-category > .lh-passed-audits > .lh-audit {
+.lh-category .lh-audit,
+.lh-category .lh-audit-group {
   margin-left: calc(var(--lh-category-score-width) + var(--lh-score-margin));
 }
 
