@@ -243,7 +243,7 @@ class TraceProcessor {
    * @param {number=} endTime Optional end time (in ms) of range of interest. Defaults to trace end.
    * @return {!Array<{start: number, end: number, duration: number}>}
    */
-  static getMainThreadTopLevelEvents(model, trace, startTime = 0, endTime = Infinity) {
+  static getMainThreadTopLevelEvents(model, trace, startTime = -Infinity, endTime = Infinity) {
     // Find the main thread via the first TracingStartedInPage event in the trace
     const startEvent = trace.traceEvents.find(event => event.name === 'TracingStartedInPage');
     const mainThread = TraceProcessor._findMainThreadFromIds(model, startEvent.pid, startEvent.tid);

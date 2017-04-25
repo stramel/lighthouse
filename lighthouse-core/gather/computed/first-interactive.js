@@ -150,10 +150,10 @@ class FirstInteractive extends ComputedArtifact {
   }
 
   /**
-   * @param {!Object} trace
-   * @param {!Object} traceModel
-   * @param {!Object} traceOfTab
-   * @return {!Object}
+   * @param {!Trace} trace
+   * @param {!tr.Model} traceModel
+   * @param {!TraceOfTabArtifact} traceOfTab
+   * @return {{timeInMs: number, timestamp: number}}
    */
   computeWithArtifacts(trace, traceModel, traceOfTab) {
     const navStart = traceOfTab.timestamps.navigationStart;
