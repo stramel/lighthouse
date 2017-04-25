@@ -216,13 +216,10 @@ function expandArtifacts(artifacts) {
     });
   }
 
-  // performanceLog is the same thing as devtoolsLogs. handy that.
-  if (artifacts.performanceLog) {
-    artifacts.devtoolsLogs = {};
-    Object.keys(artifacts.performanceLog).forEach(key => {
-      artifacts.devtoolsLogs[key] = require(artifacts.performanceLog[key]);
+  if (artifacts.devtoolsLogs) {
+    Object.keys(artifacts.devtoolsLogs).forEach(key => {
+      artifacts.devtoolsLogs[key] = require(artifacts.devtoolsLogs[key]);
     });
-    delete artifacts.performanceLog;
   }
 
   return artifacts;

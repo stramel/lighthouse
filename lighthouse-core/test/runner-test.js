@@ -260,7 +260,7 @@ describe('Runner', () => {
       ],
 
       artifacts: {
-        performanceLog: {
+        devtoolsLogs: {
           defaultPass: path.join(__dirname, '/fixtures/perflog.json')
         }
       }

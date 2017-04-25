@@ -374,7 +374,7 @@ describe('Config', () => {
           traces: {
             defaultPass: path.resolve(__dirname, '../fixtures/traces/trace-user-timings.json')
           },
-          performanceLog: {
+          devtoolsLogs: {
             defaultPass: path.resolve(__dirname, '../fixtures/perflog.json')
           }
         }
@@ -399,7 +399,7 @@ describe('Config', () => {
             defaultPass: path.resolve(__dirname, '../fixtures/traces/trace-user-timings.json'),
             otherPass: path.resolve(__dirname, '../fixtures/traces/trace-user-timings.json')
           },
-          performanceLog: {
+          devtoolsLogs: {
             defaultPass: path.resolve(__dirname, '../fixtures/perflog.json'),
             otherPass: path.resolve(__dirname, '../fixtures/perflog.json')
           }
@@ -419,7 +419,7 @@ describe('Config', () => {
             defaultPass: path.resolve(__dirname,
                             '../fixtures/traces/trace-user-timings-no-tracingstartedinpage.json')
           },
-          performanceLog: {
+          devtoolsLogs: {
             defaultPass: path.resolve(__dirname, '../fixtures/perflog.json')
           }
         }
@@ -474,7 +474,7 @@ describe('Config', () => {
     it('should merge other values', () => {
       const artifacts = {
         traces: {defaultPass: '../some/long/path'},
-        performanceLog: {defaultPass: 'path/to/performance/log'},
+        devtoolsLogs: {defaultPass: 'path/to/performance/log'},
       };
       const configA = {};
       const configB = {extends: true, artifacts};
