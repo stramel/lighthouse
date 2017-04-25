@@ -337,7 +337,8 @@ Lighthouse can be used to analyze trace and performance data collected from othe
     "traces": {
       "defaultPass": "/User/me/lighthouse/lighthouse-core/test/fixtures/traces/trace-user-timings.json"
     },
-    "performanceLog": "/User/me/lighthouse/lighthouse-core/test/fixtures/traces/perflog.json"
+    "performanceLog":
+      "defaultPass": "/User/me/lighthouse/lighthouse-core/test/fixtures/traces/perflog.json"
   },
 
   "aggregations": [{

@@ -216,15 +216,13 @@ function expandArtifacts(artifacts) {
     });
   }
 
+  // performanceLog is the same thing as devtoolsLogs. handy that.
   if (artifacts.performanceLog) {
-    let perfLogData = artifacts.performanceLog;
-    if (typeof perfLogData === 'string') {
-      perfLogData = require(artifacts.performanceLog);
-    }
-    // performanceLog is the same thing as devtoolsLogs. handy that.
-    artifacts.devtoolsLogs = {
-      [Audit.DEFAULT_PASS]: perfLogData
-    };
+    artifacts.devtoolsLogs = {};
+    Object.keys(artifacts.performanceLog).forEach(key => {
+      artifacts.devtoolsLogs[key] = require(artifacts.performanceLog[key]);
+    });
+    delete artifacts.performanceLog;
   }
 
   return artifacts;

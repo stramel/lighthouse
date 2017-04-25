@@ -22,6 +22,7 @@ const defaultConfig = require('../../config/default.js');
 const log = require('../../lib/log');
 const Gatherer = require('../../gather/gatherers/gatherer');
 const Audit = require('../../audits/audit');
+const Runner = require('../../runner');
 
 /* eslint-env mocha */
 
@@ -373,12 +374,22 @@ describe('Config', () => {
           traces: {
             defaultPass: path.resolve(__dirname, '../fixtures/traces/trace-user-timings.json')
           },
-          performanceLog: path.resolve(__dirname, '../fixtures/perflog.json')
+          performanceLog: {
+            defaultPass: path.resolve(__dirname, '../fixtures/perflog.json')
+          }
         }
       });
+
+      Object.assign(config.artifacts, Runner.instantiateComputedArtifacts());
+
       const traceUserTimings = require('../fixtures/traces/trace-user-timings.json');
       assert.deepStrictEqual(config.artifacts.traces.defaultPass.traceEvents, traceUserTimings);
-      assert.equal(config.artifacts.networkRecords.defaultPass.length, 76);
+      const devtoolsLogs = config.artifacts.devtoolsLogs.defaultPass;
+      assert.equal(devtoolsLogs.length, 555);
+
+      return config.artifacts.requestNetworkRecords(devtoolsLogs).then(records => {
+        assert.equal(records.length, 76);
+      });
     });
 
     it('expands artifacts with multiple named passes', () => {
@@ -397,8 +408,8 @@ describe('Config', () => {
       const traceUserTimings = require('../fixtures/traces/trace-user-timings.json');
       assert.deepStrictEqual(config.artifacts.traces.defaultPass.traceEvents, traceUserTimings);
       assert.deepStrictEqual(config.artifacts.traces.otherPass.traceEvents, traceUserTimings);
-      assert.equal(config.artifacts.networkRecords.defaultPass.length, 76);
-      assert.equal(config.artifacts.networkRecords.otherPass.length, 76);
+      assert.equal(config.artifacts.devtoolsLogs.defaultPass.length, 555);
+      assert.equal(config.artifacts.devtoolsLogs.otherPass.length, 555);
     });
 
     it('handles traces with no TracingStartedInPage events', () => {
@@ -408,7 +419,9 @@ describe('Config', () => {
             defaultPass: path.resolve(__dirname,
                             '../fixtures/traces/trace-user-timings-no-tracingstartedinpage.json')
           },
-          performanceLog: path.resolve(__dirname, '../fixtures/perflog.json')
+          performanceLog: {
+            defaultPass: path.resolve(__dirname, '../fixtures/perflog.json')
+          }
         }
       });
 
@@ -461,7 +474,7 @@ describe('Config', () => {
     it('should merge other values', () => {
       const artifacts = {
         traces: {defaultPass: '../some/long/path'},
-        performanceLog: 'path/to/performance/log',
+        performanceLog: {defaultPass: 'path/to/performance/log'},
       };
       const configA = {};
       const configB = {extends: true, artifacts};
