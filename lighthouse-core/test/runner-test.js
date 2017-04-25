@@ -462,7 +462,7 @@ describe('Runner', () => {
 
       // Verify a computed artifact. driverMock will include networkRecords
       // built from fixtures/perflog.json.
-      const networkRecords = results.artifacts.networkRecords.firstPass;
+      const networkRecords = results.artifacts.networkRecords.firstPassDEPRECATED;
       const p = results.artifacts.requestCriticalRequestChains(networkRecords);
       return p.then(chains => {
         assert.ok(chains['93149.1']);

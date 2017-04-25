@@ -18,7 +18,6 @@
 
 const defaultConfigPath = './default.js';
 const defaultConfig = require('./default.js');
-const recordsFromLogs = require('../lib/network-recorder').recordsFromLogs;
 
 const GatherRunner = require('../gather/gather-runner');
 const log = require('../lib/log');
@@ -218,19 +217,14 @@ function expandArtifacts(artifacts) {
   }
 
   if (artifacts.performanceLog) {
-    if (typeof artifacts.performanceLog === 'string') {
-      // Support older format of a single performance log.
-      const log = require(artifacts.performanceLog);
-      artifacts.networkRecords = {
-        [Audit.DEFAULT_PASS]: recordsFromLogs(log)
-      };
-    } else {
-      artifacts.networkRecords = {};
-      Object.keys(artifacts.performanceLog).forEach(key => {
-        const log = require(artifacts.performanceLog[key]);
-        artifacts.networkRecords[key] = recordsFromLogs(log);
-      });
+    let perfLogData = artifacts.performanceLog;
+    if (typeof perfLogData === 'string') {
+      perfLogData = require(artifacts.performanceLog);
     }
+    // performanceLog is the same thing as devtoolsLogs. handy that.
+    artifacts.devtoolsLogs = {
+      [Audit.DEFAULT_PASS]: perfLogData
+    };
   }
 
   return artifacts;
