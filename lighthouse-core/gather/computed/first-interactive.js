@@ -19,6 +19,7 @@
 const ComputedArtifact = require('./computed-artifact');
 const TracingProcessor = require('../../lib/traces/tracing-processor');
 
+const LONG_TASK_THRESHOLD = 50;
 const LONELY_TASK_FMP_DISTANCE = 5000;
 const LONELY_TASK_ENVELOPE_SIZE = 250;
 const LONELY_TASK_NEIGHBOR_DISTANCE = 1000;
@@ -32,6 +33,9 @@ const TRACE_BUSY_MSG = 'trace was busy the entire time';
  *
  * First Interactive marks the first moment when a website is minimally interactive:
  *    > Enough (but maybe not all) UI components shown on the screen are interactive
+ *      DISCLAIMER: This is assumed by virtue of the fact that the CPU is idle, actual event
+ *      listeners are not examined, server-side rendering and extreme network latency can dupe this
+ *      definition.
  *    > The page responds to user input in a reasonable time on average, but it’s ok if this
  *      response is not always immediate.
  *
@@ -39,9 +43,15 @@ const TRACE_BUSY_MSG = 'trace was busy the entire time';
  * long tasks that are not "lonely".
  *
  *    > t = time in seconds since FMP
- *    > N = 4 * e^(-0.045 * t) + 1
- *    > a "lonely" task is an envelope of 250ms that contains a set of long tasks that have at least
- *      1 second of padding before and after the envelope that contain no long tasks.
+ *    > N = f(t) = 4 * e^(-0.045 * t) + 1
+ *      5 = f(0) = 4 + 1
+ *      3 ~= f(15) ~= 2 + 1
+ *      1 ~= f(∞) ~= 0 + 1
+ *    > a "lonely" task is an envelope of 250ms at least 5s after FMP that contains a set of long
+ *      tasks that have at least 1 second of padding before and after the envelope that contain no
+ *      long tasks.
+ *
+ * If this timestamp is earlier than DOMContentLoaded, use DOMContentLoaded as firstInteractive.
  */
 class FirstInteractive extends ComputedArtifact {
   get name() {
@@ -155,10 +165,9 @@ class FirstInteractive extends ComputedArtifact {
       throw new Error('trace not at least 5 seconds longer than FMP');
     }
 
-    const longTasks = TracingProcessor.getMainThreadTopLevelEvents(traceModel, trace, FMP)
-        .filter(evt => evt.end - evt.start >= 50 && evt.end > FMP);
-    const firstInteractive = FirstInteractive.findQuietWindow(FMP, traceEnd,
-        longTasks);
+    const longTasksAfterFMP = TracingProcessor.getMainThreadTopLevelEvents(traceModel, trace, FMP)
+        .filter(evt => evt.end - evt.start >= LONG_TASK_THRESHOLD && evt.end > FMP);
+    const firstInteractive = FirstInteractive.findQuietWindow(FMP, traceEnd, longTasksAfterFMP);
 
     const valueInMs = Math.max(firstInteractive, DCL);
     return {

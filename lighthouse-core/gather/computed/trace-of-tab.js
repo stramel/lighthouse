@@ -88,9 +88,9 @@ class TraceOfTab extends ComputedArtifact {
       firstMeaningfulPaint = lastCandidate;
     }
 
-    const onLoad = frameEvents.find(e => e.name === 'loadEventStart' && e.ts > navigationStart.ts);
+    const onLoad = frameEvents.find(e => e.name === 'loadEventEnd' && e.ts > navigationStart.ts);
     const domContentLoaded = frameEvents.find(
-      e => e.name === 'domContentLoadedEventStart' && e.ts > navigationStart.ts
+      e => e.name === 'domContentLoadedEventEnd' && e.ts > navigationStart.ts
     );
 
     // subset all trace events to just our tab's process (incl threads other than main)

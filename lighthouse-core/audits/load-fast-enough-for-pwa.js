@@ -20,7 +20,7 @@
 /** @fileoverview
  *  This audit evaluates if a page's load performance is fast enough for it to be considered a PWA.
  *  We are doublechecking that the network requests were throttled (or slow on their own)
- *  Afterwards, we report if the TTI is less than 10 seconds.
+ *  Afterwards, we report if the TTFI is less than 10 seconds.
  */
 
 const Audit = require('./audit');
@@ -28,9 +28,9 @@ const Emulation = require('../lib/emulation');
 
 const Formatter = require('../report/formatter');
 
-// Maximum TTI to be considered "fast" for PWA baseline checklist
+// Maximum TTFI to be considered "fast" for PWA baseline checklist
 //   https://developers.google.com/web/progressive-web-apps/checklist
-const MAXIMUM_TTI = 10 * 1000;
+const MAXIMUM_TTFI = 10 * 1000;
 
 class LoadFastEnough4Pwa extends Audit {
   /**
@@ -65,7 +65,7 @@ class LoadFastEnough4Pwa extends Audit {
     const trace = artifacts.traces[Audit.DEFAULT_PASS];
     return artifacts.requestFirstInteractive(trace).then(firstInteractive => {
       const timeToFirstInteractive = firstInteractive.timeInMs;
-      const isFast = timeToFirstInteractive < MAXIMUM_TTI;
+      const isFast = timeToFirstInteractive < MAXIMUM_TTFI;
 
       const extendedInfo = {
         formatter: Formatter.SUPPORTED_FORMATS.NULL,

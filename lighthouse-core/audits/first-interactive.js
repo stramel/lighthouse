@@ -16,8 +16,6 @@ const Formatter = require('../report/formatter');
 //   https://www.desmos.com/calculator/rjp0lbit8y
 const SCORING_POINT_OF_DIMINISHING_RETURNS = 1700;
 const SCORING_MEDIAN = 10000;
-// This aligns with the external TTI targets in https://goo.gl/yXqxpL
-const SCORING_TARGET = 5000;
 
 const distribution = TracingProcessor.getLogNormalDistribution(
   SCORING_MEDIAN,
@@ -35,7 +33,6 @@ class FirstInteractiveMetric extends Audit {
       description: 'First Interactive (beta)',
       helpText: 'The first point at which necessary scripts of the page have loaded ' +
           'and the CPU is idle enough to handle most user input.',
-      optimalValue: SCORING_TARGET.toLocaleString() + 'ms',
       scoringMode: Audit.SCORING_MODES.NUMERIC,
       requiredArtifacts: ['traces']
     };

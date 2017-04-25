@@ -24,6 +24,7 @@ if (typeof global.window === 'undefined') {
 // The ideal input response latency, the time between the input task and the
 // first frame of the response.
 const BASE_RESPONSE_LATENCY = 16;
+const SCHEDULABLE_TASK_TITLE = 'TaskQueueManager::ProcessTaskFromWorkQueue';
 
 // we need gl-matrix and jszip for traceviewer
 // since it has internal forks for isNode and they get mixed up during
@@ -240,16 +241,17 @@ class TraceProcessor {
    * @param {{traceEvents: !Array<!Object>}} trace
    * @param {number=} startTime Optional start time (in ms) of range of interest. Defaults to trace start.
    * @param {number=} endTime Optional end time (in ms) of range of interest. Defaults to trace end.
-   * @return {!Array<{start: number, end: number}>}
+   * @return {!Array<{start: number, end: number, duration: number}>}
    */
   static getMainThreadTopLevelEvents(model, trace, startTime = 0, endTime = Infinity) {
     // Find the main thread via the first TracingStartedInPage event in the trace
     const startEvent = trace.traceEvents.find(event => event.name === 'TracingStartedInPage');
     const mainThread = TraceProcessor._findMainThreadFromIds(model, startEvent.pid, startEvent.tid);
 
-    // TODO(bckenny): filter for top level slices ourselves?
-    const events = mainThread.sliceGroup.topLevelSlices.filter(slice => {
-      return slice.end > startTime && slice.start < endTime;
+    const events = mainThread.sliceGroup.slices.filter(slice => {
+      return slice.title === SCHEDULABLE_TASK_TITLE &&
+          slice.end > startTime &&
+          slice.start < endTime;
     });
 
     events.sort((a, b) => a.start - b.start);
