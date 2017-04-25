@@ -174,8 +174,6 @@ class UnusedCSSRules extends Audit {
 
     const devtoolsLogs = artifacts.devtoolsLogs[Audit.DEFAULT_PASS];
     return artifacts.requestNetworkRecords(devtoolsLogs).then(networkRecords => {
-      Audit.__tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts);
-
       const indexedSheets = UnusedCSSRules.indexStylesheetsById(styles, networkRecords);
       UnusedCSSRules.countUnusedRules(usage, indexedSheets);
       const results = Object.keys(indexedSheets).map(sheetId => {

@@ -17,7 +17,6 @@
 'use strict';
 
 const DEFAULT_PASS = 'defaultPass';
-const assert = require('assert');
 
 class Audit {
   /**
@@ -55,32 +54,6 @@ class Audit {
       error: true,
       debugString
     });
-  }
-
-  static __tempNetRecordsAvailCheck__(artifacts) {
-    try {
-      artifacts.requestNetworkRecords([]);
-    } catch(e) {
-      e.fatal = true;
-      throw e;
-    }
-  }
-
-  static __tempNetRecordsLegacyAndComputedMatch__(networkRecords, artifacts) {
-    return;
-    try {
-      const gatherRecords = artifacts.networkRecords[Audit.DEFAULT_PASS + 'DEPRECATED'];
-      assert.strictEqual(networkRecords.length, gatherRecords.length);
-      for (let i = 0; i < networkRecords.length; i++) {
-        assert.strictEqual(networkRecords[i]._startTime, gatherRecords[i]._startTime);
-        assert.strictEqual(networkRecords[i]._wallIssueTime, gatherRecords[i]._wallIssueTime);
-        assert.strictEqual(networkRecords[i]._requestId, gatherRecords[i]._requestId);
-      }
-    } catch (e) {
-
-      e.fatal = true;
-      throw e;
-    }
   }
 
   /**

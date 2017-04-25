@@ -359,7 +359,7 @@ class GatherRunner {
               }
               tracingData.devtoolsLogs[passName] = passData.devtoolsLog;
 
-             // DD SOMETHING WITH
+              // DD SOMETHING WITH
               tracingData.networkRecords[passName + 'DEPRECATED'] = passData.networkRecords;
 
               if (passIndex === 0) {

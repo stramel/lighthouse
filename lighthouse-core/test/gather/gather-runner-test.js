@@ -494,6 +494,31 @@ describe('GatherRunner', function() {
       });
   });
 
+  it('doesn\'t leave networkRecords as an artifact', () => {
+    const passes = [{
+      blankDuration: 0,
+      recordNetwork: true,
+      recordTrace: true,
+      passName: 'firstPass',
+      gatherers: [new TestGatherer()]
+    }, {
+      blankDuration: 0,
+      recordNetwork: true,
+      recordTrace: true,
+      passName: 'secondPass',
+      gatherers: [new TestGatherer()]
+    }];
+    const options = {driver: fakeDriver, url: 'https://example.com', flags: {}, config: {}};
+
+    return GatherRunner.run(passes, options)
+      .then(artifacts => {
+        // todo, trash these
+        assert.ok(artifacts.networkRecords['firstPass' + 'DEPRECATED']);
+        assert.ok(artifacts.networkRecords['secondPass' + 'DEPRECATED']);
+      });
+  });
+
+
   it('loads gatherers from custom paths', () => {
     const root = path.resolve(__dirname, '../fixtures');
 
